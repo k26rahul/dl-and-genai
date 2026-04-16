@@ -674,185 +674,197 @@ export default function App() {
           </div>
 
           {/* ========================================== */}
-          {/* 3. COLLAPSIBLE DATA TABLE (Order 3, Span 7)  */}
+          {/* RIGHT COLUMN WRAPPER                       */}
           {/* ========================================== */}
-          <div className='order-3 lg:col-span-7 bg-white rounded-xl md:rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden h-fit'>
-            <div
-              className='bg-slate-800 p-2.5 md:p-4 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition-colors'
-              onClick={() => setIsTableOpen(!isTableOpen)}
-            >
-              <h2 className='text-sm md:text-lg font-bold text-white flex items-center gap-2'>
-                <svg
-                  className='w-4 h-4 md:w-5 md:h-5 text-blue-400'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth='2'
-                    d='M4 6h16M4 10h16M4 14h16M4 18h16'
-                  ></path>
-                </svg>
-                Batch Predictions (10 Samples)
-              </h2>
-              <div className='text-slate-300 text-[10px] md:text-sm font-semibold'>
-                {isTableOpen ? '▲ Collapse' : '▼ Expand'}
-              </div>
-            </div>
-
-            {isTableOpen && (
-              <div className='p-2 md:p-4 overflow-x-auto custom-scrollbar max-h-64 lg:max-h-96 overflow-y-auto'>
-                <table className='w-full text-[10px] md:text-sm text-left min-w-[300px]'>
-                  <thead className='text-[9px] md:text-[10px] text-slate-500 bg-slate-50 uppercase border-b border-slate-200'>
-                    <tr>
-                      <th className='px-2 py-1.5 md:px-3 md:py-2'>ID</th>
-                      <th className='px-2 py-1.5 md:px-3 md:py-2'>Inputs (X)</th>
-                      <th className='px-2 py-1.5 md:px-3 md:py-2 text-center text-blue-700 font-bold'>
-                        Pred (A2)
-                      </th>
-                      <th className='px-2 py-1.5 md:px-3 md:py-2 text-center'>
-                        True (Y)
-                      </th>
-                      <th className='px-2 py-1.5 md:px-3 md:py-2 text-right'>
-                        BCE Error
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {X_DATA.map((x, i) => {
-                      const pred = snap.A2 ? snap.A2[i][0] : null;
-                      const trueY = Y_DATA[i][0];
-                      let err = null;
-                      let isCorrect = false;
-
-                      if (pred !== null) {
-                        const pClipped = clip(pred, 1e-9, 1 - 1e-9);
-                        err = -(
-                          trueY * Math.log(pClipped) +
-                          (1 - trueY) * Math.log(1 - pClipped)
-                        );
-                        isCorrect = (pred >= 0.5 ? 1 : 0) === trueY;
-                      }
-
-                      const rowColor =
-                        snap.epoch > 0 && pred !== null
-                          ? isCorrect
-                            ? 'bg-green-50/50'
-                            : 'bg-red-50/50'
-                          : '';
-
-                      return (
-                        <tr
-                          key={i}
-                          className={`border-b border-slate-100 font-mono text-[10px] md:text-[13px] ${rowColor}`}
-                        >
-                          <td className='px-2 py-1.5 md:px-3 md:py-2 text-slate-400'>
-                            #{i}
-                          </td>
-                          <td className='px-2 py-1.5 md:px-3 md:py-2 text-slate-600 truncate'>
-                            [{x.map(v => v.toFixed(1)).join(', ')}]
-                          </td>
-                          <td className='px-2 py-1.5 md:px-3 md:py-2 text-center font-bold text-blue-600'>
-                            {pred === null ? '---' : pred.toFixed(4)}
-                          </td>
-                          <td className='px-2 py-1.5 md:px-3 md:py-2 text-center font-bold text-slate-800'>
-                            {trueY}
-                          </td>
-                          <td className='px-2 py-1.5 md:px-3 md:py-2 text-right text-red-500'>
-                            {err === null ? '---' : err.toFixed(4)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          {/* ========================================== */}
-          {/* 4. LOSS CURVE (Order 4, Span 12)             */}
-          {/* ========================================== */}
-          <div className='order-4 lg:col-span-12 bg-white p-2 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-slate-200'>
-            <h2 className='text-xs md:text-sm font-bold text-slate-700 uppercase tracking-wide mb-1 md:mb-2 px-1 md:px-2'>
-              Global Training Trajectory (Loss vs Epochs)
-            </h2>
-            <div className='w-full flex justify-center bg-slate-50 rounded-lg md:rounded-xl border border-slate-100 overflow-hidden relative h-28 md:h-48'>
+          <div className='order-3 lg:col-span-7 flex flex-col gap-2 md:gap-4 lg:gap-5'>
+            {/* ========================================== */}
+            {/* 3. COLLAPSIBLE DATA TABLE (Order 3)          */}
+            {/* ========================================== */}
+            <div className='bg-white rounded-xl md:rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden h-fit'>
               <div
-                className={`absolute inset-0 transition-opacity duration-300 pointer-events-none ${phase === 'loss' ? 'bg-red-500/10' : 'opacity-0'}`}
-              ></div>
-              <svg
-                width='100%'
-                height='100%'
-                viewBox='0 0 800 200'
-                preserveAspectRatio='none'
-                className='bg-transparent'
+                className='bg-slate-800 p-2.5 md:p-4 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition-colors'
+                onClick={() => setIsTableOpen(!isTableOpen)}
               >
-                <line
-                  x1='40'
-                  y1='160'
-                  x2='780'
-                  y2='160'
-                  stroke='#e5e7eb'
-                  strokeWidth='2'
-                />
-                <line x1='40' y1='20' x2='40' y2='160' stroke='#e5e7eb' strokeWidth='2' />
-                <text
-                  x='400'
-                  y='190'
-                  fontSize='14'
-                  fill='#9ca3af'
-                  textAnchor='middle'
-                  fontWeight='bold'
-                >
-                  Epochs
-                </text>
-                <text
-                  x='15'
-                  y='90'
-                  fontSize='14'
-                  fill='#9ca3af'
-                  textAnchor='middle'
-                  fontWeight='bold'
-                  transform='rotate(-90 15 90)'
-                >
-                  BCE Loss
-                </text>
-                {lossHistory.length > 0 && (
-                  <>
-                    <text x='35' y='25' fontSize='12' fill='#9ca3af' textAnchor='end'>
-                      {Math.max(0.8, ...lossHistory.map(h => h.loss)).toFixed(1)}
-                    </text>
-                    <text
-                      x='780'
-                      y='175'
-                      fontSize='12'
-                      fill='#9ca3af'
-                      textAnchor='middle'
-                    >
-                      {Math.max(10, snap.epoch)}
-                    </text>
+                <h2 className='text-sm md:text-lg font-bold text-white flex items-center gap-2'>
+                  <svg
+                    className='w-4 h-4 md:w-5 md:h-5 text-blue-400'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
                     <path
-                      d={lossHistory
-                        .map((h, i) => {
-                          const maxEp = Math.max(10, snap.epoch);
-                          const maxL = Math.max(0.8, ...lossHistory.map(hl => hl.loss));
-                          const px = 40 + (h.epoch / maxEp) * 740;
-                          const py = 160 - (h.loss / maxL) * 140;
-                          return `${i === 0 ? 'M' : 'L'} ${px} ${py}`;
-                        })
-                        .join(' ')}
-                      fill='none'
-                      stroke='#ef4444'
-                      strokeWidth='3'
                       strokeLinecap='round'
                       strokeLinejoin='round'
-                    />
-                  </>
-                )}
-              </svg>
+                      strokeWidth='2'
+                      d='M4 6h16M4 10h16M4 14h16M4 18h16'
+                    ></path>
+                  </svg>
+                  Batch Predictions (10 Samples)
+                </h2>
+                <div className='text-slate-300 text-[10px] md:text-sm font-semibold'>
+                  {isTableOpen ? '▲ Collapse' : '▼ Expand'}
+                </div>
+              </div>
+
+              {isTableOpen && (
+                <div className='p-2 md:p-4 overflow-x-auto custom-scrollbar max-h-64 lg:max-h-96 overflow-y-auto'>
+                  <table className='w-full text-[10px] md:text-sm text-left min-w-[300px]'>
+                    <thead className='text-[9px] md:text-[10px] text-slate-500 bg-slate-50 uppercase border-b border-slate-200'>
+                      <tr>
+                        <th className='px-2 py-1.5 md:px-3 md:py-2'>ID</th>
+                        <th className='px-2 py-1.5 md:px-3 md:py-2'>Inputs (X)</th>
+                        <th className='px-2 py-1.5 md:px-3 md:py-2 text-center text-blue-700 font-bold'>
+                          Pred (A2)
+                        </th>
+                        <th className='px-2 py-1.5 md:px-3 md:py-2 text-center'>
+                          True (Y)
+                        </th>
+                        <th className='px-2 py-1.5 md:px-3 md:py-2 text-right'>
+                          BCE Error
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {X_DATA.map((x, i) => {
+                        const pred = snap.A2 ? snap.A2[i][0] : null;
+                        const trueY = Y_DATA[i][0];
+                        let err = null;
+                        let isCorrect = false;
+
+                        if (pred !== null) {
+                          const pClipped = clip(pred, 1e-9, 1 - 1e-9);
+                          err = -(
+                            trueY * Math.log(pClipped) +
+                            (1 - trueY) * Math.log(1 - pClipped)
+                          );
+                          isCorrect = (pred >= 0.5 ? 1 : 0) === trueY;
+                        }
+
+                        const rowColor =
+                          snap.epoch > 0 && pred !== null
+                            ? isCorrect
+                              ? 'bg-green-50/50'
+                              : 'bg-red-50/50'
+                            : '';
+
+                        return (
+                          <tr
+                            key={i}
+                            className={`border-b border-slate-100 font-mono text-[10px] md:text-[13px] ${rowColor}`}
+                          >
+                            <td className='px-2 py-1.5 md:px-3 md:py-2 text-slate-400'>
+                              #{i}
+                            </td>
+                            <td className='px-2 py-1.5 md:px-3 md:py-2 text-slate-600 truncate'>
+                              [{x.map(v => v.toFixed(1)).join(', ')}]
+                            </td>
+                            <td className='px-2 py-1.5 md:px-3 md:py-2 text-center font-bold text-blue-600'>
+                              {pred === null ? '---' : pred.toFixed(4)}
+                            </td>
+                            <td className='px-2 py-1.5 md:px-3 md:py-2 text-center font-bold text-slate-800'>
+                              {trueY}
+                            </td>
+                            <td className='px-2 py-1.5 md:px-3 md:py-2 text-right text-red-500'>
+                              {err === null ? '---' : err.toFixed(4)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* ========================================== */}
+            {/* 4. LOSS CURVE (Order 4)                      */}
+            {/* ========================================== */}
+            <div className='bg-white p-2 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-slate-200'>
+              <h2 className='text-xs md:text-sm font-bold text-slate-700 uppercase tracking-wide mb-1 md:mb-2 px-1 md:px-2'>
+                Global Training Trajectory (Loss vs Epochs)
+              </h2>
+              <div className='w-full flex justify-center bg-slate-50 rounded-lg md:rounded-xl border border-slate-100 overflow-hidden relative h-28 md:h-48'>
+                <div
+                  className={`absolute inset-0 transition-opacity duration-300 pointer-events-none ${phase === 'loss' ? 'bg-red-500/10' : 'opacity-0'}`}
+                ></div>
+                <svg
+                  width='100%'
+                  height='100%'
+                  viewBox='0 0 800 200'
+                  preserveAspectRatio='none'
+                  className='bg-transparent'
+                >
+                  <line
+                    x1='40'
+                    y1='160'
+                    x2='780'
+                    y2='160'
+                    stroke='#e5e7eb'
+                    strokeWidth='2'
+                  />
+                  <line
+                    x1='40'
+                    y1='20'
+                    x2='40'
+                    y2='160'
+                    stroke='#e5e7eb'
+                    strokeWidth='2'
+                  />
+                  <text
+                    x='400'
+                    y='190'
+                    fontSize='14'
+                    fill='#9ca3af'
+                    textAnchor='middle'
+                    fontWeight='bold'
+                  >
+                    Epochs
+                  </text>
+                  <text
+                    x='15'
+                    y='90'
+                    fontSize='14'
+                    fill='#9ca3af'
+                    textAnchor='middle'
+                    fontWeight='bold'
+                    transform='rotate(-90 15 90)'
+                  >
+                    BCE Loss
+                  </text>
+                  {lossHistory.length > 0 && (
+                    <>
+                      <text x='35' y='25' fontSize='12' fill='#9ca3af' textAnchor='end'>
+                        {Math.max(0.8, ...lossHistory.map(h => h.loss)).toFixed(1)}
+                      </text>
+                      <text
+                        x='780'
+                        y='175'
+                        fontSize='12'
+                        fill='#9ca3af'
+                        textAnchor='middle'
+                      >
+                        {Math.max(10, snap.epoch)}
+                      </text>
+                      <path
+                        d={lossHistory
+                          .map((h, i) => {
+                            const maxEp = Math.max(10, snap.epoch);
+                            const maxL = Math.max(0.8, ...lossHistory.map(hl => hl.loss));
+                            const px = 40 + (h.epoch / maxEp) * 740;
+                            const py = 160 - (h.loss / maxL) * 140;
+                            return `${i === 0 ? 'M' : 'L'} ${px} ${py}`;
+                          })
+                          .join(' ')}
+                        fill='none'
+                        stroke='#ef4444'
+                        strokeWidth='3'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </>
+                  )}
+                </svg>
+              </div>
             </div>
           </div>
 
