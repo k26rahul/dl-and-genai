@@ -2,6 +2,7 @@ import GradientDescentStepByStep from './from-gemini/gradient-descent-step-by-st
 import GradientDescent3D from './from-gemini/3-d-gradient-descent-partial-derivatives.jsx'
 import GradientDescent5D from './from-gemini/gradient-descent-in-5-dimensions.jsx'
 import InsideMLP from './from-gemini/inside-the-multi-layer-perceptron.jsx'
+import RealWorldNNTraining from './from-gemini/real-world-neural-network-training.jsx'
 
 const visualizations = [
   {
@@ -47,6 +48,17 @@ const visualizations = [
     tag: 'Neural Networks · Backprop',
     gradient: 'grad-amber',
     component: InsideMLP,
+  },
+  {
+    id: 'real-world-nn-training',
+    path: '/real-world-nn-training',
+    title: 'Real-World Neural Network Training',
+    description:
+      'Train an MLP on real datasets (Breast Cancer, Iris, Auto MPG) and explore loss curves, accuracy, overfitting, and learning rate schedules.',
+    icon: '🌍',
+    tag: 'MLP · Overfitting · TensorFlow.js',
+    gradient: 'grad-teal',
+    component: RealWorldNNTraining,
   },
 ]
 
