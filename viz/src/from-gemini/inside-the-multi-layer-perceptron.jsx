@@ -184,7 +184,7 @@ export default function App() {
 
   // Collapsible Panels State
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
-  const [isTableOpen, setIsTableOpen] = useState(true); // Default true so the user knows it's there
+  const [isTableOpen, setIsTableOpen] = useState(true);
   const [inspectorParty, setInspectorParty] = useState('layer1');
 
   const nextPhaseMap = {
@@ -371,12 +371,13 @@ export default function App() {
                 onChange={e => setLearningRate(Number(e.target.value))}
                 className='bg-slate-100 border border-slate-300 rounded px-1.5 py-1 md:px-2 md:py-1.5 text-xs md:text-sm font-mono shadow-inner'
               >
-                <option value={0.01}>0.01</option>
-                <option value={0.1}>0.10</option>
-                <option value={0.2}>0.20</option>
-                <option value={0.5}>0.50</option>
-                <option value={0.8}>0.80</option>
-                <option value={1.0}>1.00</option>
+                {[0.01, 0.05, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0].map(
+                  lr => (
+                    <option key={lr} value={lr}>
+                      {lr.toFixed(2)}
+                    </option>
+                  ),
+                )}
               </select>
             </div>
 
