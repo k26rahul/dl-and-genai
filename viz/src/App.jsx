@@ -2,36 +2,9 @@ import { Routes, Route, Link } from 'react-router-dom'
 import visualizations from './visualizations'
 import './App.css'
 
-function BackButton() {
-  return (
-    <div className="viz-back-btn-wrapper">
-      <Link to="/" className="viz-back-btn">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M19 12H5M12 5l-7 7 7 7" />
-        </svg>
-        All Visualizations
-      </Link>
-    </div>
-  )
-}
-
 function VizRoute({ viz }) {
   const Component = viz.component
-  return (
-    <>
-      <BackButton />
-      <Component />
-    </>
-  )
+  return <Component />
 }
 
 function HomePage() {
