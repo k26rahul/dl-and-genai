@@ -40,7 +40,7 @@ const DATASETS = {
   },
 };
 
-const MAX_EPOCHS = 150;
+const EPOCH_OPTIONS = [50, 100, 150, 200, 300, 500];
 
 // ==========================================
 // 2. HELPER FUNCTIONS
@@ -101,6 +101,7 @@ export default function App() {
   const [baseLr, setBaseLr] = useState(0.05);
   const [lrSchedule, setLrSchedule] = useState('constant');
   const [throttle, setThrottle] = useState(50); // ms
+  const [maxEpochs, setMaxEpochs] = useState(150);
 
   // --- Training State ---
   const [isTraining, setIsTraining] = useState(false);
@@ -113,6 +114,7 @@ export default function App() {
 
   // --- UI State ---
   const [isTableOpen, setIsTableOpen] = useState(false);
+  const [expandedLayers, setExpandedLayers] = useState({});
 
   const dsConfig = DATASETS[selectedDataset];
 
@@ -167,12 +169,12 @@ export default function App() {
 
   const precomputeLrCurve = () => {
     const pts = [];
-    for (let i = 0; i <= MAX_EPOCHS; i++) {
+    for (let i = 0; i <= maxEpochs; i++) {
       pts.push(getScheduledLr(i, baseLr, lrSchedule));
     }
     return pts;
   };
-  const lrCurve = useMemo(precomputeLrCurve, [baseLr, lrSchedule]);
+  const lrCurve = useMemo(precomputeLrCurve, [baseLr, lrSchedule, maxEpochs]);
 
   // ==========================================
   // TRAINING LOOP
@@ -242,7 +244,7 @@ export default function App() {
       batchSize === 'Full' ? trainX.length : parseInt(batchSize, 10);
 
     // 4. Custom Fit Loop for UI Syncing & Throttling
-    for (let e = 1; e <= MAX_EPOCHS; e++) {
+    for (let e = 1; e <= maxEpochs; e++) {
       if (!isTrainingRef.current) break;
 
       const currentEpochLr = getScheduledLr(e, baseLr, lrSchedule);
@@ -313,6 +315,7 @@ export default function App() {
   // ==========================================
   const renderChart = type => {
     if (history.length === 0) return null;
+    const MAX_EPOCHS = maxEpochs;
     const w = 400,
       h = 180,
       padX = 30,
@@ -449,7 +452,7 @@ export default function App() {
     const w = 150,
       h = 40;
     const maxLr = Math.max(...lrCurve);
-    const mapX = e => (e / MAX_EPOCHS) * w;
+    const mapX = e => (e / maxEpochs) * w;
     const mapY = v => h - (v / Math.max(0.001, maxLr)) * h;
     const path = lrCurve
       .map((v, i) => `${i === 0 ? 'M' : 'L'} ${mapX(i)} ${mapY(v)}`)
@@ -472,6 +475,21 @@ export default function App() {
   };
 
   const latestMetric = history.length > 0 ? history[history.length - 1] : null;
+
+  // Dataset stats (derived from rawData)
+  const totalRows = rawData ? rawData.X.length : null;
+  const trainRows = totalRows ? Math.floor(totalRows * 0.8) : null;
+  const testRows = totalRows ? totalRows - trainRows : null;
+  const parsedBatchSizeForStats =
+    batchSize === 'Full' ? trainRows : parseInt(batchSize, 10);
+  const trainBatches =
+    trainRows && parsedBatchSizeForStats
+      ? Math.ceil(trainRows / parsedBatchSizeForStats)
+      : null;
+  const testBatches =
+    testRows && parsedBatchSizeForStats
+      ? Math.ceil(testRows / parsedBatchSizeForStats)
+      : null;
 
   return (
     <div className='min-h-screen bg-slate-50 text-slate-800 p-2 md:p-4 font-sans'>
@@ -582,6 +600,23 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Max Epochs */}
+              <div className='flex flex-col w-full sm:w-auto'>
+                <label className='text-[10px] font-bold text-slate-500 uppercase mb-1'>
+                  Max Epochs
+                </label>
+                <select
+                  value={maxEpochs}
+                  onChange={e => { setMaxEpochs(Number(e.target.value)); resetTraining(); }}
+                  disabled={isTraining}
+                  className='bg-slate-50 border border-slate-300 rounded-md px-2 py-1.5 text-xs md:text-sm font-semibold'
+                >
+                  {EPOCH_OPTIONS.map(n => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
+                </select>
+              </div>
+
               {/* Readouts */}
               <div className='flex items-center justify-center gap-3 md:gap-4 bg-slate-100 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-slate-200 w-full lg:w-auto ml-auto'>
                 <div className='text-center'>
@@ -615,7 +650,11 @@ export default function App() {
             <div className='bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-slate-200 flex-1 min-h-[220px] flex flex-col'>
               <div className='flex justify-between items-center mb-2 md:mb-4'>
                 <h2 className='text-xs md:text-sm font-bold text-slate-700 uppercase tracking-wide'>
-                  Loss Curve (BCE / MSE)
+                  Loss Curve ({
+                    dsConfig.loss === 'binaryCrossentropy' ? 'Binary Cross-Entropy' :
+                    dsConfig.loss === 'categoricalCrossentropy' ? 'Categorical Cross-Entropy' :
+                    'Mean Squared Error'
+                  })
                 </h2>
                 <div className='flex gap-3 text-[10px] md:text-xs font-bold'>
                   <span className='flex items-center gap-1 text-blue-600'>
@@ -648,39 +687,14 @@ export default function App() {
                 </h2>
                 <div className='flex gap-3 text-[10px] md:text-xs font-bold'>
                   <span className='flex items-center gap-1 text-green-600'>
-                    <div className='w-2 h-2 rounded-full bg-green-500'></div> Train{' '}
+                    <div className='w-2 h-2 rounded-full bg-green-500'></div>{' '}
+                    Train {dsConfig.type === 'classification' ? 'Accuracy' : 'MAE'}{' '}
                     {latestMetric ? `(${latestMetric.trainMetric.toFixed(4)})` : ''}
                   </span>
                   <span className='flex items-center gap-1 text-red-500'>
-                    <div className='w-2 h-2 rounded-full bg-red-500'></div> Test{' '}
+                    <div className='w-2 h-2 rounded-full bg-red-500'></div>{' '}
+                    Test {dsConfig.type === 'classification' ? 'Accuracy' : 'MAE'}{' '}
                     {latestMetric ? `(${latestMetric.testMetric.toFixed(4)})` : ''}
-                  </span>
-                </div>
-              </div>
-              <div className='flex-1 w-full bg-slate-50 rounded-lg border border-slate-100 relative'>
-                {history.length === 0 ? (
-                  <div className='absolute inset-0 flex items-center justify-center text-slate-400 text-xs'>
-                    Awaiting Training...
-                  </div>
-                ) : (
-                  <div className='w-full h-full p-2'>{renderChart('loss')}</div>
-                )}
-              </div>
-            </div>
-
-            {/* Metric Chart */}
-            <div className='bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-slate-200 flex-1 min-h-[220px] flex flex-col'>
-              <div className='flex justify-between items-center mb-2 md:mb-4'>
-                <h2 className='text-xs md:text-sm font-bold text-slate-700 uppercase tracking-wide'>
-                  Performance (
-                  {dsConfig.type === 'classification' ? 'Accuracy' : 'Mean Abs Error'})
-                </h2>
-                <div className='flex gap-3 text-[10px] md:text-xs font-bold'>
-                  <span className='flex items-center gap-1 text-green-600'>
-                    <div className='w-2 h-2 rounded-full bg-green-500'></div> Train Metric
-                  </span>
-                  <span className='flex items-center gap-1 text-red-500'>
-                    <div className='w-2 h-2 rounded-full bg-red-500'></div> Test Metric
                   </span>
                 </div>
               </div>
@@ -798,36 +812,107 @@ export default function App() {
 
               {/* Architecture Info */}
               <div className='bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-slate-200'>
-                <h2 className='text-xs md:text-sm font-bold text-slate-700 uppercase tracking-wide border-b border-slate-100 pb-2 mb-2'>
-                  Network Architecture
-                </h2>
-                {dataLoaded && rawData ? (
-                  <div className='flex flex-col gap-1.5'>
-                    <div className='flex justify-between text-[10px] md:text-xs bg-slate-50 p-1.5 rounded border border-slate-100'>
-                      <span className='font-bold text-slate-500'>Features (Input):</span>
-                      <span className='font-mono'>{rawData.features.length}</span>
-                    </div>
-                    {[...Array(depth)].map((_, i) => (
-                      <div
-                        key={i}
-                        className='flex justify-between text-[10px] md:text-xs bg-indigo-50 p-1.5 rounded border border-indigo-100 text-indigo-800'
-                      >
-                        <span className='font-bold'>Hidden L{i + 1} (ReLU):</span>
-                        <span className='font-mono'>{neurons[i]} neurons</span>
+                {(() => {
+                  if (!dataLoaded || !rawData) {
+                    return <div className='text-xs text-slate-400 italic py-2'>Loading configuration...</div>;
+                  }
+
+                  // Build layer descriptors
+                  const numFeatures = rawData.features.length;
+                  const parsedBatch = batchSize === 'Full'
+                    ? (totalRows ? Math.floor(totalRows * 0.8) : 'N')
+                    : parseInt(batchSize, 10);
+
+                  const layerSizes = [...neurons.slice(0, depth), dsConfig.outNeurons];
+                  const inputSizes = [numFeatures, ...layerSizes.slice(0, -1)];
+
+                  // Total params
+                  let totalParams = 0;
+                  layerSizes.forEach((outSize, i) => {
+                    totalParams += inputSizes[i] * outSize + outSize; // weights + biases
+                  });
+
+                  const toggleLayer = key => {
+                    setExpandedLayers(prev => ({ ...prev, [key]: !prev[key] }));
+                  };
+
+                  const LayerRow = ({ layerKey, label, inSize, outSize, bgClass, borderClass, textClass, badgeClass }) => {
+                    const weights = inSize * outSize;
+                    const biases = outSize;
+                    const params = weights + biases;
+                    const isOpen = !!expandedLayers[layerKey];
+                    return (
+                      <div className={`rounded border ${borderClass} overflow-hidden`}>
+                        <button
+                          onClick={() => toggleLayer(layerKey)}
+                          className={`w-full flex justify-between items-center text-[10px] md:text-xs ${bgClass} ${textClass} p-1.5 hover:opacity-80 transition-opacity`}
+                        >
+                          <span className='font-bold flex items-center gap-1'>
+                            <span className={`transition-transform duration-200 ${isOpen ? 'rotate-90' : ''} inline-block`}>▶</span>
+                            {label}
+                          </span>
+                          <span className='font-mono flex items-center gap-2'>
+                            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${badgeClass}`}>{params.toLocaleString()} params</span>
+                            <span>{outSize} neuron{outSize > 1 ? 's' : ''}</span>
+                          </span>
+                        </button>
+                        {isOpen && (
+                          <div className={`${bgClass} border-t ${borderClass} px-3 py-2 grid grid-cols-2 gap-x-4 gap-y-1 text-[9px] md:text-[10px] font-mono ${textClass} opacity-90`}>
+                            <div><span className='opacity-60'>Weights:</span> <strong>{inSize} × {outSize} = {weights.toLocaleString()}</strong></div>
+                            <div><span className='opacity-60'>Biases:</span> <strong>{biases}</strong></div>
+                            <div><span className='opacity-60'>Input shape:</span> <strong>({parsedBatch}, {inSize})</strong></div>
+                            <div><span className='opacity-60'>Output shape:</span> <strong>({parsedBatch}, {outSize})</strong></div>
+                          </div>
+                        )}
                       </div>
-                    ))}
-                    <div className='flex justify-between text-[10px] md:text-xs bg-purple-50 p-1.5 rounded border border-purple-100 text-purple-800'>
-                      <span className='font-bold'>Output ({dsConfig.activation}):</span>
-                      <span className='font-mono'>
-                        {dsConfig.outNeurons} neuron{dsConfig.outNeurons > 1 ? 's' : ''}
-                      </span>
+                    );
+                  };
+
+                  return (
+                    <div className='flex flex-col gap-1.5'>
+                      {/* Header with total params */}
+                      <div className='flex justify-between items-center border-b border-slate-100 pb-2 mb-1'>
+                        <h2 className='text-xs md:text-sm font-bold text-slate-700 uppercase tracking-wide'>Network Architecture</h2>
+                        <span className='text-[10px] font-bold bg-slate-800 text-white px-2 py-0.5 rounded-full font-mono'>
+                          {totalParams.toLocaleString()} params
+                        </span>
+                      </div>
+
+                      {/* Input row (not expandable) */}
+                      <div className='flex justify-between text-[10px] md:text-xs bg-slate-50 p-1.5 rounded border border-slate-100'>
+                        <span className='font-bold text-slate-500'>Features (Input):</span>
+                        <span className='font-mono text-slate-700'>{numFeatures} — shape ({parsedBatch}, {numFeatures})</span>
+                      </div>
+
+                      {/* Hidden layers */}
+                      {[...Array(depth)].map((_, i) => (
+                        <LayerRow
+                          key={i}
+                          layerKey={`hidden_${i}`}
+                          label={`Hidden L${i + 1} (ReLU)`}
+                          inSize={inputSizes[i]}
+                          outSize={layerSizes[i]}
+                          bgClass='bg-indigo-50'
+                          borderClass='border-indigo-100'
+                          textClass='text-indigo-800'
+                          badgeClass='bg-indigo-200 text-indigo-900'
+                        />
+                      ))}
+
+                      {/* Output layer */}
+                      <LayerRow
+                        layerKey='output'
+                        label={`Output (${dsConfig.activation})`}
+                        inSize={inputSizes[depth]}
+                        outSize={dsConfig.outNeurons}
+                        bgClass='bg-purple-50'
+                        borderClass='border-purple-100'
+                        textClass='text-purple-800'
+                        badgeClass='bg-purple-200 text-purple-900'
+                      />
                     </div>
-                  </div>
-                ) : (
-                  <div className='text-xs text-slate-400 italic py-2'>
-                    Loading configuration...
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </div>
 
@@ -859,6 +944,35 @@ export default function App() {
                   {isTableOpen ? '▲ Collapse' : '▼ Expand'}
                 </div>
               </div>
+
+              {/* Dataset Stats Bar */}
+              {dataLoaded && rawData && (
+                <div className='bg-slate-700 px-3 md:px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] md:text-xs font-mono'>
+                  <span className='text-slate-300'>
+                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Features:</span>
+                    <span className='text-emerald-400'>{rawData.features.join(' · ')}</span>
+                  </span>
+                  <span className='text-slate-500'>|</span>
+                  <span className='text-slate-300'>
+                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Total Rows:</span>
+                    <span className='text-yellow-300'>{totalRows}</span>
+                  </span>
+                  <span className='text-slate-500'>|</span>
+                  <span className='text-slate-300'>
+                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Train:</span>
+                    <span className='text-blue-300'>{trainRows} rows</span>
+                    <span className='text-slate-500 mx-1'>/</span>
+                    <span className='text-blue-400'>{trainBatches} batches</span>
+                  </span>
+                  <span className='text-slate-500'>|</span>
+                  <span className='text-slate-300'>
+                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Test:</span>
+                    <span className='text-orange-300'>{testRows} rows</span>
+                    <span className='text-slate-500 mx-1'>/</span>
+                    <span className='text-orange-400'>{testBatches} batches</span>
+                  </span>
+                </div>
+              )}
 
               {isTableOpen && dataLoaded && rawData && (
                 <div className='p-2 md:p-4 overflow-x-auto custom-scrollbar max-h-64 lg:max-h-[500px] overflow-y-auto'>
