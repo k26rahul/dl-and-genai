@@ -34,10 +34,10 @@ export default function EducationalSection() {
               </p>
               <ul className='space-y-2 text-sm'>
                 <li>
-                  <strong className='text-indigo-900'>Loss (MSE):</strong> <i>Mean Squared Error</i> averages the squared differences between predictions and true values: <code>MSE = 1/N ├å(y - Å╖)┬▓</code>. Squaring heavily penalizes large errors.
+                  <strong className='text-indigo-900'>Loss (MSE):</strong> <i>Mean Squared Error</i> averages the squared differences between predictions and true values: <code>MSE = 1/N &Sigma;(y - y&circ;)&sup2;</code>. Squaring heavily penalizes large errors.
                 </li>
                 <li>
-                  <strong className='text-indigo-900'>Performance (MAE):</strong> <i>Mean Absolute Error</i> is strictly the average absolute distance from the truth: <code>MAE = 1/N ├å|y - Å╖|</code>. If predicting MPG, an MAE of 2.5 means we are off by 2.5 MPG on average.
+                  <strong className='text-indigo-900'>Performance (MAE):</strong> <i>Mean Absolute Error</i> is strictly the average absolute distance from the truth: <code>MAE = 1/N &Sigma;|y - y&circ;|</code>. If predicting MPG, an MAE of 2.5 means we are off by 2.5 MPG on average.
                 </li>
               </ul>
             </div>
@@ -45,14 +45,14 @@ export default function EducationalSection() {
             {/* Classification */}
             <div className='bg-emerald-50/50 p-5 rounded-xl border border-emerald-100'>
               <h4 className='font-bold text-emerald-800 mb-2 flex items-center gap-2'>
-                <span className='text-lg'>🏷├»┬╕┬Å</span> Classification
+                <span className='text-lg'>&#127991;</span> Classification
               </h4>
               <p className='mb-3'>
                 Categorizing samples into distinct <strong>classes</strong>. Can be <em>binary</em> (Malignant vs Benign) or <em>multiclass</em> (Iris species).
               </p>
               <ul className='space-y-2 text-sm'>
                 <li>
-                  <strong className='text-emerald-900'>Loss (Cross-Entropy):</strong> Measures how confident the network is when guessing the correct class. It heavily penalizes confident but completely wrong predictions using logarithms: <code>CE = -├å y * log(p)</code>.
+                  <strong className='text-emerald-900'>Loss (Cross-Entropy):</strong> Measures how confident the network is when guessing the correct class. It heavily penalizes confident but completely wrong predictions using logarithms: <code>CE = -&Sigma; y * log(p)</code>.
                 </li>
                 <li>
                   <strong className='text-emerald-900'>Performance (Accuracy):</strong> Simple percentage of correctly classified samples. We can also use F1-Score for imbalanced datasets (combining Precision and Recall).
@@ -75,10 +75,10 @@ export default function EducationalSection() {
                 At the core of every neuron is a basic linear formula: <code>z = (w * x) + b</code>. The incoming feature (<strong>x</strong>) is multiplied by a learned weight (<strong>w</strong>), and a bias (<strong>b</strong>) is added to shift the result.
               </p>
               <p className='mb-3'>
-                Instead of computing this one-by-one, modern networks use <strong>Matrices</strong>. We group many features and many weights together: <code>Z = X ├ù W + b</code>. 
+                Instead of computing this one-by-one, modern networks use <strong>Matrices</strong>. We group many features and many weights together: <code>Z = X &times; W + b</code>. 
               </p>
               <div className='bg-slate-100 p-3 rounded font-mono text-xs overflow-x-auto whitespace-pre'>
-                {`[Batch, Features] ├ù [Features, Neurons] = [Batch, Neurons]
+                {`[Batch, Features] * [Features, Neurons] = [Batch, Neurons]
   (Input Data Matrix)       (Weight Matrix)       (Layer Output)`}
               </div>
             </div>
