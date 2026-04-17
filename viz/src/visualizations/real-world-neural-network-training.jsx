@@ -2,43 +2,48 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as tf from '@tensorflow/tfjs';
 
 // ==========================================
-// 1. CONFIGURATION & URLs
+// 1. CONFIGURATION & DATA ACCESS
 // ==========================================
-const DATASETS = {
-  breast_cancer: {
-    id: 'breast_cancer',
-    name: 'Breast Cancer (Binary)',
-    url: 'https://raw.githubusercontent.com/k26rahul/dl-and-genai/refs/heads/main/viz/src/visualizations/datasets/breast_cancer.json',
-    type: 'classification',
-    classes: 2,
-    outNeurons: 1,
-    activation: 'sigmoid',
-    loss: 'binaryCrossentropy',
-    metric: 'accuracy',
-  },
-  iris: {
-    id: 'iris',
-    name: 'Iris (Multi-class)',
-    url: 'https://raw.githubusercontent.com/k26rahul/dl-and-genai/refs/heads/main/viz/src/visualizations/datasets/iris.json',
-    type: 'classification',
-    classes: 3,
-    outNeurons: 3,
-    activation: 'softmax',
-    loss: 'categoricalCrossentropy',
-    metric: 'accuracy',
-  },
-  auto_mpg: {
-    id: 'auto_mpg',
-    name: 'Auto MPG (Regression)',
-    url: 'https://raw.githubusercontent.com/k26rahul/dl-and-genai/refs/heads/main/viz/src/visualizations/datasets/auto_mpg.json',
-    type: 'regression',
-    classes: 0,
-    outNeurons: 1,
-    activation: 'linear',
-    loss: 'meanSquaredError',
-    metric: 'meanAbsoluteError',
-  },
-};
+const METADATA_URL =
+  'https://raw.githubusercontent.com/k26rahul/dl-and-genai/refs/heads/main' +
+  '/viz/src/visualizations/datasets/metadata.json';
+
+// ── IndexedDB cache helpers (module-level, no extra dependencies) ────────────
+const IDB_DB = 'nnviz-datasets';
+const IDB_STORE = 'datasets';
+
+function idbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_DB, 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = e => reject(e.target.error);
+  });
+}
+async function idbGet(key) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(key);
+    req.onsuccess = e => resolve(e.target.result ?? null);
+    req.onerror = e => reject(e.target.error);
+  });
+}
+async function idbSet(key, value) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction(IDB_STORE, 'readwrite').objectStore(IDB_STORE).put(value, key);
+    req.onsuccess = () => resolve();
+    req.onerror = e => reject(e.target.error);
+  });
+}
+async function idbClear() {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction(IDB_STORE, 'readwrite').objectStore(IDB_STORE).clear();
+    req.onsuccess = () => resolve();
+    req.onerror = e => reject(e.target.error);
+  });
+}
 
 const EPOCH_OPTIONS = [50, 100, 150, 200, 300, 500];
 
@@ -88,9 +93,14 @@ const getScheduledLr = (epochIdx, initialLr, scheduleType) => {
 // ==========================================
 export default function App() {
   // --- Core State ---
-  const [selectedDataset, setSelectedDataset] = useState('breast_cancer');
+  const [selectedDataset, setSelectedDataset] = useState(null); // set by metadata
+  const [allDatasets, setAllDatasets] = useState({});           // populated from metadata.json
+  const [metaInfo, setMetaInfo] = useState(null);               // { generatedAt, defaultDataset }
   const [dataLoaded, setDataLoaded] = useState(false);
   const [rawData, setRawData] = useState(null);
+  // Download state: null = idle, -1 = indeterminate, 0-100 = percent
+  const [downloadProgress, setDownloadProgress] = useState(null);
+  const [cacheHit, setCacheHit] = useState(false);
 
   // --- Network Architecture ---
   const [depth, setDepth] = useState(2);
@@ -118,7 +128,8 @@ export default function App() {
   const [isTableOpen, setIsTableOpen] = useState(false);
   const [expandedLayers, setExpandedLayers] = useState({});
 
-  const dsConfig = DATASETS[selectedDataset];
+  // Derived: active dataset config (null while metadata is loading)
+  const dsConfig = selectedDataset ? allDatasets[selectedDataset] ?? null : null;
 
   // React to Base LR or Schedule changes instantly, while keeping the dot on the curve!
   useEffect(() => {
@@ -142,36 +153,103 @@ export default function App() {
   };
 
   // ==========================================
-  // DATA LOADING
+  // METADATA LOADING (once on mount)
   // ==========================================
   useEffect(() => {
-    let isMounted = true;
+    fetch(METADATA_URL)
+      .then(r => r.json())
+      .then(meta => {
+        setAllDatasets(meta.datasets);
+        setMetaInfo(meta);
+        setSelectedDataset(meta.defaultDataset);
+      })
+      .catch(err => console.error('Failed to load metadata:', err));
+  }, []);
+
+  // ==========================================
+  // DATASET LOADING (streaming fetch + IndexedDB cache)
+  // ==========================================
+  useEffect(() => {
+    if (!selectedDataset || !metaInfo || !allDatasets[selectedDataset]) return;
+
+    let cancelled = false;
+    const dsConf = allDatasets[selectedDataset];
+    // Cache key encodes generatedAt so regenerated datasets automatically bust the cache
+    const cacheKey = `${selectedDataset}__${metaInfo.generatedAt}`;
+
+    // Reset all training state on dataset switch
     setDataLoaded(false);
+    setRawData(null);
     setHistory([]);
     setEpoch(0);
     setPredictions([]);
     setIsTraining(false);
     isTrainingRef.current = false;
-    if (modelRef.current) {
-      modelRef.current.dispose();
-      modelRef.current = null;
-    }
+    if (modelRef.current) { modelRef.current.dispose(); modelRef.current = null; }
     shuffledDataRef.current = null;
     normStatsRef.current = null;
+    setCacheHit(false);
 
-    fetch(dsConfig.url)
-      .then(res => res.json())
-      .then(data => {
-        if (!isMounted) return;
-        setRawData(data);
-        setDataLoaded(true);
-      })
-      .catch(err => console.error('Failed to load dataset:', err));
+    async function load() {
+      // 1. Try IndexedDB first
+      try {
+        const cached = await idbGet(cacheKey);
+        if (cached && !cancelled) {
+          setRawData(cached);
+          setDataLoaded(true);
+          setCacheHit(true);
+          return;
+        }
+      } catch (_) { /* IDB unavailable — fall through to network */ }
 
-    return () => {
-      isMounted = false;
-    };
-  }, [selectedDataset]);
+      // 2. Streaming fetch with progress
+      if (cancelled) return;
+      setDownloadProgress(-1); // indeterminate until Content-Length arrives
+
+      try {
+        const response = await fetch(dsConf.url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const contentLength = response.headers.get('Content-Length');
+        const total = contentLength ? parseInt(contentLength, 10) : null;
+        if (total) setDownloadProgress(0);
+
+        const reader = response.body.getReader();
+        const chunks = [];
+        let received = 0;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (cancelled) { reader.cancel(); return; }
+          chunks.push(value);
+          received += value.length;
+          if (total) setDownloadProgress(Math.round((received / total) * 100));
+        }
+
+        // Assemble chunks → string → JSON
+        const all = new Uint8Array(received);
+        let pos = 0;
+        for (const chunk of chunks) { all.set(chunk, pos); pos += chunk.length; }
+        const data = JSON.parse(new TextDecoder().decode(all));
+
+        // 3. Cache in IndexedDB for next time
+        try { await idbSet(cacheKey, data); } catch (_) { /* quota full — skip */ }
+
+        if (!cancelled) {
+          setRawData(data);
+          setDataLoaded(true);
+        }
+      } catch (err) {
+        if (!cancelled) console.error('Dataset fetch failed:', err);
+      } finally {
+        if (!cancelled) setDownloadProgress(null);
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, [selectedDataset, metaInfo]);
 
   const precomputeLrCurve = () => {
     const pts = [];
@@ -544,6 +622,16 @@ export default function App() {
       ? Math.ceil(testRows / parsedBatchSizeForStats)
       : null;
 
+  // Guard: render a simple spinner while metadata.json is being fetched (~1 req)
+  if (!metaInfo || !dsConfig) {
+    return (
+      <div className='min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-3 text-slate-500'>
+        <div className='w-8 h-8 border-2 border-indigo-300 border-t-indigo-600 rounded-full animate-spin' />
+        <p className='text-sm font-medium'>Loading datasets…</p>
+      </div>
+    );
+  }
+
   return (
     <div className='min-h-screen bg-slate-50 text-slate-800 p-2 md:p-4 font-sans'>
       <div className='max-w-7xl mx-auto'>
@@ -576,16 +664,22 @@ export default function App() {
                 ) : (
                   <button
                     onClick={startTraining}
-                    disabled={!dataLoaded}
+                    disabled={!dataLoaded || downloadProgress !== null}
                     className={`flex-1 sm:flex-none sm:w-28 font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm flex justify-center items-center gap-2 ${
-                      !dataLoaded
+                      !dataLoaded || downloadProgress !== null
                         ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                         : canResume
                         ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                         : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                     }`}
                   >
-                    {!dataLoaded ? 'Loading...' : canResume ? '▶ Resume' : '▶ Train'}
+                    {downloadProgress !== null
+                      ? 'Downloading…'
+                      : !dataLoaded
+                      ? 'Loading…'
+                      : canResume
+                      ? '▶ Resume'
+                      : '▶ Train'}
                   </button>
                 )}
                 <button
@@ -600,16 +694,32 @@ export default function App() {
               {/* Architecture & Config Dropdowns */}
               <div className='flex flex-wrap flex-1 gap-x-6 gap-y-3 items-end'>
                 <div className='flex flex-col w-full sm:w-auto'>
-                  <label className='text-[10px] font-bold text-slate-500 uppercase mb-1'>
-                    Target Dataset
-                  </label>
+                  <div className='flex items-center justify-between mb-1 gap-3'>
+                    <label className='text-[10px] font-bold text-slate-500 uppercase'>
+                      Target Dataset
+                    </label>
+                    <div className='flex items-center gap-2'>
+                      {cacheHit && (
+                        <span className='text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded'>
+                          ⚡ cached
+                        </span>
+                      )}
+                      <button
+                        onClick={async () => { await idbClear(); setCacheHit(false); }}
+                        className='text-[9px] text-slate-400 hover:text-red-500 transition-colors'
+                        title='Clear all cached datasets from IndexedDB'
+                      >
+                        clear cache
+                      </button>
+                    </div>
+                  </div>
                   <select
-                    value={selectedDataset}
+                    value={selectedDataset ?? ''}
                     onChange={e => setSelectedDataset(e.target.value)}
-                    disabled={isTraining}
+                    disabled={isTraining || downloadProgress !== null}
                     className='bg-slate-50 border border-slate-300 rounded-md px-2 py-1.5 text-xs md:text-sm font-semibold'
                   >
-                    {Object.values(DATASETS).map(ds => (
+                    {Object.values(allDatasets).map(ds => (
                       <option key={ds.id} value={ds.id}>
                         {ds.name}
                       </option>
