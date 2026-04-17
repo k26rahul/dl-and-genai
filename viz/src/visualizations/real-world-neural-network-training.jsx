@@ -8,7 +8,7 @@ const DATASETS = {
   breast_cancer: {
     id: 'breast_cancer',
     name: 'Breast Cancer (Binary)',
-    url: 'https://raw.githubusercontent.com/k26rahul/dl-and-genai/refs/heads/main/datasets/breast_cancer.json',
+    url: 'https://raw.githubusercontent.com/k26rahul/dl-and-genai/refs/heads/main/viz/src/visualizations/datasets/breast_cancer.json',
     type: 'classification',
     classes: 2,
     outNeurons: 1,
@@ -19,7 +19,7 @@ const DATASETS = {
   iris: {
     id: 'iris',
     name: 'Iris (Multi-class)',
-    url: 'https://raw.githubusercontent.com/k26rahul/dl-and-genai/refs/heads/main/datasets/iris.json',
+    url: 'https://raw.githubusercontent.com/k26rahul/dl-and-genai/refs/heads/main/viz/src/visualizations/datasets/iris.json',
     type: 'classification',
     classes: 3,
     outNeurons: 3,
@@ -30,7 +30,7 @@ const DATASETS = {
   auto_mpg: {
     id: 'auto_mpg',
     name: 'Auto MPG (Regression)',
-    url: 'https://raw.githubusercontent.com/k26rahul/dl-and-genai/refs/heads/main/datasets/auto_mpg.json',
+    url: 'https://raw.githubusercontent.com/k26rahul/dl-and-genai/refs/heads/main/viz/src/visualizations/datasets/auto_mpg.json',
     type: 'regression',
     classes: 0,
     outNeurons: 1,
