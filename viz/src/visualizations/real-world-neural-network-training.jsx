@@ -110,7 +110,7 @@ export default function App() {
   const [batchSize, setBatchSize] = useState('32');
   const [baseLr, setBaseLr] = useState(0.05);
   const [lrSchedule, setLrSchedule] = useState('constant');
-  const [throttle, setThrottle] = useState(50); // ms
+  const [throttle, setThrottle] = useState(0); // ms
   const [maxEpochs, setMaxEpochs] = useState(150);
 
   // --- Training State ---
@@ -121,8 +121,7 @@ export default function App() {
   const [predictions, setPredictions] = useState([]); // Store live predictions
   const [currentLr, setCurrentLr] = useState(baseLr);
   const modelRef = useRef(null);
-  const shuffledDataRef = useRef(null); // Persists shuffle across pause/resume
-  const normStatsRef = useRef(null);    // Persists mean/std across pause/resume
+
 
   // --- UI State ---
   const [isTableOpen, setIsTableOpen] = useState(false);
@@ -148,8 +147,6 @@ export default function App() {
       modelRef.current.dispose();
       modelRef.current = null;
     }
-    shuffledDataRef.current = null;
-    normStatsRef.current = null;
   };
 
   // ==========================================
@@ -186,8 +183,6 @@ export default function App() {
     setIsTraining(false);
     isTrainingRef.current = false;
     if (modelRef.current) { modelRef.current.dispose(); modelRef.current = null; }
-    shuffledDataRef.current = null;
-    normStatsRef.current = null;
     setCacheHit(false);
 
     async function load() {
@@ -266,38 +261,21 @@ export default function App() {
   const startTraining = async () => {
     if (!dataLoaded || !rawData) return;
 
-    // Resume if a model exists and training was paused mid-run.
-    // A completed run (epoch === maxEpochs) is treated as a fresh start.
-    const isResume = modelRef.current !== null && epoch > 0 && epoch < maxEpochs;
-
     setIsTraining(true);
     isTrainingRef.current = true;
 
-    if (!isResume) {
-      // Fresh start — wipe previous run state and dispose old model
-      if (modelRef.current) {
-        modelRef.current.dispose();
-        modelRef.current = null;
-      }
-      setHistory([]);
-      setEpoch(0);
-      setPredictions([]);
+    // Fresh start — wipe previous run state and dispose old model
+    if (modelRef.current) {
+      modelRef.current.dispose();
+      modelRef.current = null;
     }
+    setHistory([]);
+    setEpoch(0);
+    setPredictions([]);
 
     // 1. Data Prep (Shuffle & Split)
-    // On fresh start: shuffle and compute normalization, storing both in refs.
-    // On resume: reuse the exact same shuffle and normalization to avoid
-    // the data mismatch that causes the abrupt loss spike on resume.
-    let shuffledX, shuffledY;
-    if (!isResume) {
-      const shuffled = shuffleData(rawData.X, rawData.y);
-      shuffledX = shuffled.shuffledX;
-      shuffledY = shuffled.shuffledY;
-      shuffledDataRef.current = { shuffledX, shuffledY };
-    } else {
-      ({ shuffledX, shuffledY } = shuffledDataRef.current);
-    }
-    const { trainX, trainY, testX, testY } = splitData(shuffledX, shuffledY, 0.8);
+    const shuffled = shuffleData(rawData.X, rawData.y);
+    const { trainX, trainY, testX, testY } = splitData(shuffled.shuffledX, shuffled.shuffledY, 0.8);
 
     // 2. TFJS Tensors & Normalization
     tf.engine().startScope(); // Memory management
@@ -308,20 +286,8 @@ export default function App() {
     const yTestRaw = tf.tensor2d(testY);
 
     // Standardization (Z-score normalization based ONLY on train data)
-    let mean, std;
-    if (!isResume) {
-      mean = xTrainRaw.mean(0);
-      std = xTrainRaw.squaredDifference(mean).mean(0).sqrt().add(1e-7);
-      // Store as plain JS arrays so they survive tf scope disposal
-      normStatsRef.current = {
-        mean: mean.arraySync(),
-        std: std.arraySync(),
-      };
-    } else {
-      // Reconstruct from stored stats — identical normalization to the original run
-      mean = tf.tensor1d(normStatsRef.current.mean);
-      std = tf.tensor1d(normStatsRef.current.std);
-    }
+    const mean = xTrainRaw.mean(0);
+    const std = xTrainRaw.squaredDifference(mean).mean(0).sqrt().add(1e-7);
 
     const xTrainNorm = xTrainRaw.sub(mean).div(std);
     const xTestNorm = xTestRaw.sub(mean).div(std);
@@ -330,49 +296,41 @@ export default function App() {
     const previewRaw = tf.tensor2d(rawData.X.slice(0, 20));
     const previewNorm = previewRaw.sub(mean).div(std);
 
-    let model;
-    if (!isResume) {
-      // 3. Build Model (fresh start only)
-      model = tf.sequential();
-      const numFeatures = rawData.features.length;
+    // 3. Build Model (always fresh start)
+    const model = tf.sequential();
+    const numFeatures = rawData.features.length;
 
-      for (let i = 0; i < depth; i++) {
-        model.add(
-          tf.layers.dense({
-            units: neurons[i],
-            activation: 'relu',
-            inputShape: i === 0 ? [numFeatures] : undefined,
-            kernelInitializer: 'heNormal',
-          }),
-        );
-      }
+    for (let i = 0; i < depth; i++) {
       model.add(
         tf.layers.dense({
-          units: dsConfig.outNeurons,
-          activation: dsConfig.activation,
-          kernelInitializer: 'glorotNormal',
+          units: neurons[i],
+          activation: 'relu',
+          inputShape: i === 0 ? [numFeatures] : undefined,
+          kernelInitializer: 'heNormal',
         }),
       );
-
-      model.compile({
-        optimizer: tf.train.adam(baseLr),
-        loss: dsConfig.loss,
-        metrics: [dsConfig.metric === 'meanAbsoluteError' ? 'mae' : dsConfig.metric],
-      });
-
-      modelRef.current = model;
-    } else {
-      // Resume — reuse the existing model with its trained weights
-      model = modelRef.current;
     }
+    model.add(
+      tf.layers.dense({
+        units: dsConfig.outNeurons,
+        activation: dsConfig.activation,
+        kernelInitializer: 'glorotNormal',
+      }),
+    );
+
+    model.compile({
+      optimizer: tf.train.adam(baseLr),
+      loss: dsConfig.loss,
+      metrics: [dsConfig.metric === 'meanAbsoluteError' ? 'mae' : dsConfig.metric],
+    });
+
+    modelRef.current = model;
 
     const parsedBatchSize =
       batchSize === 'Full' ? trainX.length : parseInt(batchSize, 10);
 
-    // 4. Custom Fit Loop — start from epoch 1 on fresh run, epoch+1 on resume
-    const startEpoch = isResume ? epoch + 1 : 1;
-
-    for (let e = startEpoch; e <= maxEpochs; e++) {
+    // 4. Custom Fit Loop — always start from epoch 1
+    for (let e = 1; e <= maxEpochs; e++) {
       if (!isTrainingRef.current) break;
 
       const currentEpochLr = getScheduledLr(e, baseLr, lrSchedule);
@@ -604,9 +562,6 @@ export default function App() {
 
   const latestMetric = history.length > 0 ? history[history.length - 1] : null;
 
-  // True when training was paused mid-run (model exists, not yet finished)
-  const canResume = modelRef.current !== null && epoch > 0 && epoch < maxEpochs && !isTraining;
-
   // Dataset stats (derived from rawData)
   const totalRows = rawData ? rawData.X.length : null;
   const trainRows = totalRows ? Math.floor(totalRows * 0.8) : null;
@@ -652,14 +607,14 @@ export default function App() {
           {/* ========================================== */}
           <div className='order-1 lg:col-span-12 bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-slate-200'>
             <div className='flex flex-wrap gap-4 items-end'>
-              {/* Train / Pause / Resume */}
+              {/* Train / Stop */}
               <div className='flex-shrink-0 w-full sm:w-auto flex gap-2'>
                 {isTraining ? (
                   <button
                     onClick={stopTraining}
-                    className='flex-1 sm:flex-none sm:w-28 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm'
+                    className='flex-1 sm:flex-none sm:w-28 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm flex justify-center items-center gap-2'
                   >
-                    ⏸ Pause
+                    ⏹ Stop
                   </button>
                 ) : (
                   <button
@@ -668,8 +623,6 @@ export default function App() {
                     className={`flex-1 sm:flex-none sm:w-28 font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm flex justify-center items-center gap-2 ${
                       !dataLoaded || downloadProgress !== null
                         ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : canResume
-                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                         : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                     }`}
                   >
@@ -677,18 +630,9 @@ export default function App() {
                       ? 'Downloading…'
                       : !dataLoaded
                       ? 'Loading…'
-                      : canResume
-                      ? '▶ Resume'
                       : '▶ Train'}
                   </button>
                 )}
-                <button
-                  onClick={resetTraining}
-                  disabled={isTraining || history.length === 0}
-                  className={`flex-1 sm:flex-none sm:w-24 font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm flex justify-center items-center gap-1 ${!isTraining && history.length > 0 ? 'bg-slate-200 hover:bg-slate-300 text-slate-700' : 'bg-slate-100 text-slate-300 cursor-not-allowed'}`}
-                >
-                  ↺ Reset
-                </button>
               </div>
 
               {/* Architecture & Config Dropdowns */}
@@ -917,6 +861,7 @@ export default function App() {
                       className='bg-white border border-indigo-200 rounded px-2 py-1 text-xs font-mono shadow-sm w-28'
                     >
                       <option value='1'>1 (SGD)</option>
+                      <option value='8'>8</option>
                       <option value='16'>16</option>
                       <option value='32'>32</option>
                       <option value='64'>64</option>
