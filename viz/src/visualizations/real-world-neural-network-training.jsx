@@ -1129,10 +1129,12 @@ export default function App() {
               {/* Dataset Stats Bar */}
               {dataLoaded && rawData && (
                 <div className='bg-slate-700 px-3 md:px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] md:text-xs font-mono'>
-                  <span className='text-slate-300 w-full sm:w-auto mb-1 sm:mb-0 pb-1 sm:pb-0 border-b border-slate-600 sm:border-0'>
-                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Features ({rawData.features.length}):</span>
-                    <span className='text-emerald-400 break-words leading-relaxed'>{rawData.features.join(' · ')}</span>
-                  </span>
+                  <div className='text-slate-300 w-full sm:w-auto mb-1 sm:mb-0 pb-1 sm:pb-0 border-b border-slate-600 sm:border-0 flex items-start flex-1'>
+                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1 min-w-max'>Features ({rawData.features.length}):</span>
+                    <div className='text-emerald-400 break-words leading-snug max-h-10 overflow-y-auto custom-scrollbar pr-2 w-full'>
+                      {rawData.features.join(' · ')}
+                    </div>
+                  </div>
                   <span className='hidden sm:inline text-slate-500'>|</span>
                   <span className='text-slate-300'>
                     <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Size:</span>
