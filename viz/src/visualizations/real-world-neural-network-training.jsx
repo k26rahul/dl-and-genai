@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as tf from '@tensorflow/tfjs';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 // ==========================================
 // 1. CONFIGURATION & DATA ACCESS
@@ -401,136 +402,72 @@ export default function App() {
   // ==========================================
   const renderChart = type => {
     if (history.length === 0) return null;
-    const MAX_EPOCHS = maxEpochs;
-    const w = 400,
-      h = 180,
-      padX = 30,
-      padY = 20;
-
-    let minVal, maxVal, key1, key2, color1, color2, label;
+    let key1, key2, color1, color2, domain;
+    
     if (type === 'loss') {
-      maxVal = Math.max(...history.map(h => Math.max(h.trainLoss, h.testLoss)));
-      minVal = 0;
       key1 = 'trainLoss';
       key2 = 'testLoss';
       color1 = '#3b82f6';
-      color2 = '#f97316'; // Blue / Orange
-      label = 'Loss';
+      color2 = '#f97316';
+      domain = ['auto', 'auto'];
     } else {
-      // Metric
       key1 = 'trainMetric';
       key2 = 'testMetric';
       color1 = '#22c55e';
-      color2 = '#ef4444'; // Green / Red
+      color2 = '#ef4444';
       if (dsConfig.type === 'classification') {
-        minVal = 0;
-        maxVal = 1.0;
-        label = 'Accuracy';
+        domain = [0, 1];
       } else {
-        maxVal = Math.max(...history.map(h => Math.max(h.trainMetric, h.testMetric)));
-        minVal = 0;
-        label = 'Mean Abs Error';
+        domain = ['auto', 'auto'];
       }
     }
 
-    const mapX = e => padX + ((e - 1) / Math.max(1, MAX_EPOCHS - 1)) * (w - padX * 2);
-    const mapY = v =>
-      h - padY - ((v - minVal) / Math.max(0.001, maxVal - minVal)) * (h - padY * 2);
-
-    const path1 = history
-      .map((pt, i) => `${i === 0 ? 'M' : 'L'} ${mapX(pt.epoch)} ${mapY(pt[key1])}`)
-      .join(' ');
-    const path2 = history
-      .map((pt, i) => `${i === 0 ? 'M' : 'L'} ${mapX(pt.epoch)} ${mapY(pt[key2])}`)
-      .join(' ');
-
     return (
-      <svg viewBox={`0 0 ${w} ${h}`} className='w-full h-full overflow-visible'>
-        {/* Grid & Axes */}
-        <line
-          x1={padX}
-          y1={h - padY}
-          x2={w - padX}
-          y2={h - padY}
-          stroke='#e2e8f0'
-          strokeWidth='2'
-        />
-        <line
-          x1={padX}
-          y1={padY}
-          x2={padX}
-          y2={h - padY}
-          stroke='#e2e8f0'
-          strokeWidth='2'
-        />
-
-        {/* Max/Min labels */}
-        <text x={padX - 5} y={padY + 4} fontSize='10' fill='#94a3b8' textAnchor='end'>
-          {type === 'metric' && dsConfig.type === 'classification'
-            ? '100%'
-            : maxVal.toFixed(2)}
-        </text>
-        <text x={padX - 5} y={h - padY} fontSize='10' fill='#94a3b8' textAnchor='end'>
-          0
-        </text>
-        <text
-          x={w - padX}
-          y={h - padY + 12}
-          fontSize='10'
-          fill='#94a3b8'
-          textAnchor='middle'
-        >
-          {MAX_EPOCHS}
-        </text>
-
-        <text
-          x='10'
-          y={h / 2}
-          fontSize='10'
-          fill='#94a3b8'
-          textAnchor='middle'
-          transform={`rotate(-90 10 ${h / 2})`}
-          fontWeight='bold'
-        >
-          {label}
-        </text>
-
-        {/* Paths */}
-        <path
-          d={path1}
-          fill='none'
-          stroke={color1}
-          strokeWidth='2'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-        <path
-          d={path2}
-          fill='none'
-          stroke={color2}
-          strokeWidth='2'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-
-        {/* Current Points */}
-        {history.length > 0 && (
-          <>
-            <circle
-              cx={mapX(history[history.length - 1].epoch)}
-              cy={mapY(history[history.length - 1][key1])}
-              r='3'
-              fill={color1}
-            />
-            <circle
-              cx={mapX(history[history.length - 1].epoch)}
-              cy={mapY(history[history.length - 1][key2])}
-              r='3'
-              fill={color2}
-            />
-          </>
-        )}
-      </svg>
+      <ResponsiveContainer width='100%' height='100%'>
+        <LineChart data={history} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+          <CartesianGrid strokeDasharray='3 3' stroke='#e2e8f0' vertical={false} />
+          <XAxis 
+            dataKey='epoch' 
+            type='number' 
+            domain={[1, maxEpochs]} 
+            tick={{ fontSize: 10, fill: '#94a3b8' }} 
+            axisLine={{ stroke: '#e2e8f0' }}
+            tickLine={false}
+          />
+          <YAxis 
+            domain={domain} 
+            tick={{ fontSize: 10, fill: '#94a3b8' }} 
+            axisLine={{ stroke: '#e2e8f0' }}
+            tickLine={false}
+            tickFormatter={val => val.toFixed(2)}
+          />
+          <Tooltip 
+            contentStyle={{ fontSize: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+            labelStyle={{ fontWeight: 'bold', color: '#64748b', marginBottom: '4px' }}
+            formatter={(value, name) => [value.toFixed(4), name]}
+            labelFormatter={(label) => `Epoch ${label}`}
+            isAnimationActive={false}
+          />
+          <Line
+            type='monotone'
+            dataKey={key1}
+            name={type === 'loss' ? 'Train Loss' : (dsConfig.type === 'classification' ? 'Train Accuracy' : 'Train MAE')}
+            stroke={color1}
+            strokeWidth={2}
+            dot={false}
+            isAnimationActive={false}
+          />
+          <Line
+            type='monotone'
+            dataKey={key2}
+            name={type === 'loss' ? 'Test Loss' : (dsConfig.type === 'classification' ? 'Test Accuracy' : 'Test MAE')}
+            stroke={color2}
+            strokeWidth={2}
+            dot={false}
+            isAnimationActive={false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     );
   };
 
@@ -1338,3 +1275,4 @@ export default function App() {
     </div>
   );
 }
+
