@@ -111,6 +111,8 @@ export default function App() {
   const [predictions, setPredictions] = useState([]); // Store live predictions
   const [currentLr, setCurrentLr] = useState(baseLr);
   const modelRef = useRef(null);
+  const shuffledDataRef = useRef(null); // Persists shuffle across pause/resume
+  const normStatsRef = useRef(null);    // Persists mean/std across pause/resume
 
   // --- UI State ---
   const [isTableOpen, setIsTableOpen] = useState(false);
@@ -135,6 +137,8 @@ export default function App() {
       modelRef.current.dispose();
       modelRef.current = null;
     }
+    shuffledDataRef.current = null;
+    normStatsRef.current = null;
   };
 
   // ==========================================
@@ -152,6 +156,8 @@ export default function App() {
       modelRef.current.dispose();
       modelRef.current = null;
     }
+    shuffledDataRef.current = null;
+    normStatsRef.current = null;
 
     fetch(dsConfig.url)
       .then(res => res.json())
@@ -182,14 +188,37 @@ export default function App() {
   const startTraining = async () => {
     if (!dataLoaded || !rawData) return;
 
+    // Resume if a model exists and training was paused mid-run.
+    // A completed run (epoch === maxEpochs) is treated as a fresh start.
+    const isResume = modelRef.current !== null && epoch > 0 && epoch < maxEpochs;
+
     setIsTraining(true);
     isTrainingRef.current = true;
-    setHistory([]);
-    setEpoch(0);
-    setPredictions([]);
+
+    if (!isResume) {
+      // Fresh start — wipe previous run state and dispose old model
+      if (modelRef.current) {
+        modelRef.current.dispose();
+        modelRef.current = null;
+      }
+      setHistory([]);
+      setEpoch(0);
+      setPredictions([]);
+    }
 
     // 1. Data Prep (Shuffle & Split)
-    const { shuffledX, shuffledY } = shuffleData(rawData.X, rawData.y);
+    // On fresh start: shuffle and compute normalization, storing both in refs.
+    // On resume: reuse the exact same shuffle and normalization to avoid
+    // the data mismatch that causes the abrupt loss spike on resume.
+    let shuffledX, shuffledY;
+    if (!isResume) {
+      const shuffled = shuffleData(rawData.X, rawData.y);
+      shuffledX = shuffled.shuffledX;
+      shuffledY = shuffled.shuffledY;
+      shuffledDataRef.current = { shuffledX, shuffledY };
+    } else {
+      ({ shuffledX, shuffledY } = shuffledDataRef.current);
+    }
     const { trainX, trainY, testX, testY } = splitData(shuffledX, shuffledY, 0.8);
 
     // 2. TFJS Tensors & Normalization
@@ -201,8 +230,20 @@ export default function App() {
     const yTestRaw = tf.tensor2d(testY);
 
     // Standardization (Z-score normalization based ONLY on train data)
-    const mean = xTrainRaw.mean(0);
-    const std = xTrainRaw.squaredDifference(mean).mean(0).sqrt().add(1e-7); // Prevent div by 0
+    let mean, std;
+    if (!isResume) {
+      mean = xTrainRaw.mean(0);
+      std = xTrainRaw.squaredDifference(mean).mean(0).sqrt().add(1e-7);
+      // Store as plain JS arrays so they survive tf scope disposal
+      normStatsRef.current = {
+        mean: mean.arraySync(),
+        std: std.arraySync(),
+      };
+    } else {
+      // Reconstruct from stored stats — identical normalization to the original run
+      mean = tf.tensor1d(normStatsRef.current.mean);
+      std = tf.tensor1d(normStatsRef.current.std);
+    }
 
     const xTrainNorm = xTrainRaw.sub(mean).div(std);
     const xTestNorm = xTestRaw.sub(mean).div(std);
@@ -211,40 +252,49 @@ export default function App() {
     const previewRaw = tf.tensor2d(rawData.X.slice(0, 20));
     const previewNorm = previewRaw.sub(mean).div(std);
 
-    // 3. Build Model
-    const model = tf.sequential();
-    const numFeatures = rawData.features.length;
+    let model;
+    if (!isResume) {
+      // 3. Build Model (fresh start only)
+      model = tf.sequential();
+      const numFeatures = rawData.features.length;
 
-    for (let i = 0; i < depth; i++) {
+      for (let i = 0; i < depth; i++) {
+        model.add(
+          tf.layers.dense({
+            units: neurons[i],
+            activation: 'relu',
+            inputShape: i === 0 ? [numFeatures] : undefined,
+            kernelInitializer: 'heNormal',
+          }),
+        );
+      }
       model.add(
         tf.layers.dense({
-          units: neurons[i],
-          activation: 'relu',
-          inputShape: i === 0 ? [numFeatures] : undefined,
-          kernelInitializer: 'heNormal',
+          units: dsConfig.outNeurons,
+          activation: dsConfig.activation,
+          kernelInitializer: 'glorotNormal',
         }),
       );
+
+      model.compile({
+        optimizer: tf.train.adam(baseLr),
+        loss: dsConfig.loss,
+        metrics: [dsConfig.metric],
+      });
+
+      modelRef.current = model;
+    } else {
+      // Resume — reuse the existing model with its trained weights
+      model = modelRef.current;
     }
-    model.add(
-      tf.layers.dense({
-        units: dsConfig.outNeurons,
-        activation: dsConfig.activation,
-        kernelInitializer: 'glorotNormal',
-      }),
-    );
 
-    model.compile({
-      optimizer: tf.train.adam(baseLr),
-      loss: dsConfig.loss,
-      metrics: [dsConfig.metric],
-    });
-
-    modelRef.current = model;
     const parsedBatchSize =
       batchSize === 'Full' ? trainX.length : parseInt(batchSize, 10);
 
-    // 4. Custom Fit Loop for UI Syncing & Throttling
-    for (let e = 1; e <= maxEpochs; e++) {
+    // 4. Custom Fit Loop — start from epoch 1 on fresh run, epoch+1 on resume
+    const startEpoch = isResume ? epoch + 1 : 1;
+
+    for (let e = startEpoch; e <= maxEpochs; e++) {
       if (!isTrainingRef.current) break;
 
       const currentEpochLr = getScheduledLr(e, baseLr, lrSchedule);
@@ -302,7 +352,7 @@ export default function App() {
 
     setIsTraining(false);
     isTrainingRef.current = false;
-    tf.engine().endScope(); // Free memory
+    tf.engine().endScope(); // Free data tensors (model weights survive as tf.Variables)
   };
 
   const stopTraining = () => {
@@ -476,6 +526,9 @@ export default function App() {
 
   const latestMetric = history.length > 0 ? history[history.length - 1] : null;
 
+  // True when training was paused mid-run (model exists, not yet finished)
+  const canResume = modelRef.current !== null && epoch > 0 && epoch < maxEpochs && !isTraining;
+
   // Dataset stats (derived from rawData)
   const totalRows = rawData ? rawData.X.length : null;
   const trainRows = totalRows ? Math.floor(totalRows * 0.8) : null;
@@ -511,22 +564,28 @@ export default function App() {
           {/* ========================================== */}
           <div className='order-1 lg:col-span-12 bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-slate-200'>
             <div className='flex flex-wrap gap-4 items-end'>
-              {/* Start / Stop / Reset */}
+              {/* Train / Pause / Resume */}
               <div className='flex-shrink-0 w-full sm:w-auto flex gap-2'>
                 {isTraining ? (
                   <button
                     onClick={stopTraining}
-                    className='flex-1 sm:flex-none sm:w-28 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm'
+                    className='flex-1 sm:flex-none sm:w-28 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm'
                   >
-                    ⏹ Stop
+                    ⏸ Pause
                   </button>
                 ) : (
                   <button
                     onClick={startTraining}
                     disabled={!dataLoaded}
-                    className={`flex-1 sm:flex-none sm:w-28 font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm flex justify-center items-center gap-2 ${dataLoaded ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
+                    className={`flex-1 sm:flex-none sm:w-28 font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm flex justify-center items-center gap-2 ${
+                      !dataLoaded
+                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                        : canResume
+                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                        : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                    }`}
                   >
-                    {!dataLoaded ? 'Loading...' : '▶ Train'}
+                    {!dataLoaded ? 'Loading...' : canResume ? '▶ Resume' : '▶ Train'}
                   </button>
                 )}
                 <button
