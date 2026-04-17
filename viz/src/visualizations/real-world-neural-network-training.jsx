@@ -140,9 +140,12 @@ export default function App() {
 
   const get10Random = max => {
     if (!max) return [];
-    const arr = [];
-    for (let i = 0; i < Math.min(10, max); i++) arr.push(Math.floor(Math.random() * max));
-    return arr;
+    const count = Math.min(10, max);
+    const chosen = new Set();
+    while (chosen.size < count) {
+      chosen.add(Math.floor(Math.random() * max));
+    }
+    return Array.from(chosen);
   };
 
   const updatePredictionsForIndices = (tIdx, tsIdx) => {
@@ -644,7 +647,7 @@ export default function App() {
 
                    const rowColor = (isTraining || predArrayGroup) && predArray ? (isCorrect && dsConfig.type === 'classification' ? 'bg-green-50/50' : (dsConfig.type === 'classification' ? 'bg-red-50/50' : 'bg-blue-50/50')) : '';
                    return (
-                     <tr key={idx} className={`border-b border-slate-100 font-mono text-[9px] md:text-[11px] ${rowColor}`}>
+                     <tr key={`${type}-${idx}-${i}`} className={`border-b border-slate-100 font-mono text-[9px] md:text-[11px] ${rowColor}`}>
                        <td className='px-2 py-1 text-slate-400'>#{idx}</td>
                        <td className='px-2 py-1 text-slate-600 truncate max-w-[150px]'>
                          [{x.slice(0, 4).map(v => v.toFixed(1)).join(', ')}{x.length > 4 ? '...' : ''}]
