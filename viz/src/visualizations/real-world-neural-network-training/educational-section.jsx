@@ -1,4 +1,6 @@
 import React from 'react';
+import 'katex/dist/katex.min.css';
+import TeX from '@matejmazur/react-katex';
 
 export default function EducationalSection() {
   return (
@@ -48,16 +50,8 @@ export default function EducationalSection() {
                   <strong className='text-indigo-900'>Loss (MSE):</strong>{' '}
                   <i>Mean Squared Error</i> averages the squared differences between
                   predictions and true values. Squaring heavily penalizes large errors.
-                  <div className='mt-2 mb-1 flex items-center justify-start'>
-                    <img
-                      src='https://math.now.sh?from=MSE=\frac{1}{N}\sum(y-\hat{y})^2'
-                      alt='MSE Formula'
-                      className='h-8 md:h-9'
-                      style={{
-                        imageRendering: '-webkit-optimize-contrast',
-                        shapeRendering: 'geometricPrecision',
-                      }}
-                    />
+                  <div className='mt-2 mb-1 flex items-center justify-start scale-110 origin-left'>
+                    <TeX math="MSE=\frac{1}{N}\sum(y-\hat{y})^2" />
                   </div>
                 </li>
                 <li>
@@ -65,16 +59,8 @@ export default function EducationalSection() {
                   <i>Mean Absolute Error</i> is strictly the average absolute distance
                   from the truth. If predicting MPG, an MAE of 2.5 means we are off by 2.5
                   MPG on average.
-                  <div className='mt-2 flex items-center justify-start'>
-                    <img
-                      src='https://math.now.sh?from=MAE=\frac{1}{N}\sum|y-\hat{y}|'
-                      alt='MAE Formula'
-                      className='h-8 md:h-9'
-                      style={{
-                        imageRendering: '-webkit-optimize-contrast',
-                        shapeRendering: 'geometricPrecision',
-                      }}
-                    />
+                  <div className='mt-2 flex items-center justify-start scale-110 origin-left'>
+                    <TeX math="MAE=\frac{1}{N}\sum|y-\hat{y}|" />
                   </div>
                 </li>
               </ul>
@@ -96,16 +82,8 @@ export default function EducationalSection() {
                   Measures how confident the network is when guessing the correct class.
                   It heavily penalizes confident but completely wrong predictions using
                   logarithms.
-                  <div className='mt-2 flex items-center justify-start'>
-                    <img
-                      src='https://math.now.sh?from=CE=-\sum_{i}y_i\log(p_i)'
-                      alt='Cross-Entropy Formula'
-                      className='h-8 md:h-9'
-                      style={{
-                        imageRendering: '-webkit-optimize-contrast',
-                        shapeRendering: 'geometricPrecision',
-                      }}
-                    />
+                  <div className='mt-2 flex items-center justify-start scale-110 origin-left'>
+                    <TeX math="CE=-\sum_{i}y_i\log(p_i)" />
                   </div>
                 </li>
                 <li>
@@ -130,44 +108,20 @@ export default function EducationalSection() {
               <h4 className='font-bold text-xl text-slate-800 mb-4'>The Neuron & Linear Algebra</h4>
               <p className='text-slate-600 mb-4'>
                 At the core of every neuron is a basic linear formula:{' '}
-                <img
-                  src='https://math.now.sh?from=z=(w\cdot{x})%2Bb'
-                  alt='Linear Formula'
-                  className='inline-block h-4 align-middle mx-1'
-                  style={{
-                    imageRendering: '-webkit-optimize-contrast',
-                    shapeRendering: 'geometricPrecision',
-                  }}
-                />
-                . The incoming feature (<strong>x</strong>) is multiplied by a learned
-                weight (<strong>w</strong>), and a bias (<strong>b</strong>) is added to
+                <TeX math="z=(w\cdot{x})+b" />
+                . The incoming feature (<strong><TeX math="x" /></strong>) is multiplied by a learned
+                weight (<strong><TeX math="w" /></strong>), and a bias (<strong><TeX math="b" /></strong>) is added to
                 shift the result.
               </p>
               <p className='text-slate-600 mb-6'>
                 Instead of computing this one-by-one, modern networks use{' '}
                 <strong>Matrices</strong>. We group many features and many weights
                 together:{' '}
-                <img
-                  src='https://math.now.sh?from=Z=X\cdot{W}%2Bb'
-                  alt='Matrix Formula'
-                  className='inline-block h-4 align-middle mx-1'
-                  style={{
-                    imageRendering: '-webkit-optimize-contrast',
-                    shapeRendering: 'geometricPrecision',
-                  }}
-                />
+                <TeX math="Z=X\cdot{W}+b" />
                 .
               </p>
               <div className='bg-slate-50 p-6 rounded-2xl border border-slate-200 flex justify-center'>
-                <img
-                  src='https://math.now.sh?from=\underbrace{[B \times F]}_{\text{Input Matrix}} \times \underbrace{[F \times N]}_{\text{Weight Matrix}} %2B \underbrace{[1 \times N]}_{\text{Bias Vector}} = \underbrace{[B \times N]}_{\text{Layer Output}}'
-                  alt='Matrix Multiplication Shapes'
-                  className='h-10 md:h-12'
-                  style={{
-                    imageRendering: '-webkit-optimize-contrast',
-                    shapeRendering: 'geometricPrecision',
-                  }}
-                />
+                <TeX block math="\underbrace{[B \times F]}_{\text{Input Matrix}} \times \underbrace{[F \times N]}_{\text{Weight Matrix}} + \underbrace{[1 \times N]}_{\text{Bias Vector}} = \underbrace{[B \times N]}_{\text{Layer Output}}" />
               </div>
             </div>
 
@@ -178,29 +132,11 @@ export default function EducationalSection() {
                 A neural network is mathematically just a massive nested function call:
               </p>
               <div className='bg-slate-50 p-6 md:p-8 rounded-2xl mb-6 flex justify-center overflow-x-auto border border-slate-200'>
-                <img
-                  src='https://math.now.sh?from=\mathcal{L}=\text{CE}\left(\sigma\left(L_2\left(\text{ReLu}(L_1(X))\right)\right), Y_{true}\right)'
-                  alt='Backpropagation Chain Rule Formula'
-                  className='h-8 md:h-10'
-                  style={{
-                    imageRendering: '-webkit-optimize-contrast',
-                    shapeRendering: 'geometricPrecision',
-                  }}
-                />
+                <TeX block math="\mathcal{L}=\text{CE}\left(\sigma\left(L_2\left(\text{ReLu}(L_1(X))\right)\right), Y_{true}\right)" />
               </div>
               <p className='text-slate-600 mb-6'>
                 To learn, the network must figure out how changing one specific weight
-                deep inside{' '}
-                <img
-                  src='https://math.now.sh?from=L_1'
-                  alt='Layer 1'
-                  className='inline-block h-3 align-middle mx-0.5'
-                  style={{
-                    imageRendering: '-webkit-optimize-contrast',
-                    shapeRendering: 'geometricPrecision',
-                  }}
-                />{' '}
-                will affect the final <code>Loss</code>. It does this step-by-step backward
+                deep inside <TeX math="L_1" /> will affect the final <TeX math="\mathcal{L}" />. It does this step-by-step backward
                 from the error, applying calculus (the <strong>Chain Rule</strong>). This
                 entire process is called <strong>Backpropagation</strong>.
               </p>
@@ -214,26 +150,10 @@ export default function EducationalSection() {
                   {/* Layer 2 Gradients */}
                   <div className='flex flex-col items-center gap-4'>
                     <span className='text-[11px] text-emerald-600 font-bold font-mono'>
-                      Output Layer Gradients (L₂)
+                      Output Layer Gradients (<TeX math="L_2" />)
                     </span>
-                    <img
-                      src='https://math.now.sh?from=\frac{\partial \mathcal{L}}{\partial W_2} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial W_2}}_{\text{L2}}'
-                      alt='dL/dW2'
-                      className='h-16 md:h-24'
-                      style={{
-                        imageRendering: '-webkit-optimize-contrast',
-                        shapeRendering: 'geometricPrecision',
-                      }}
-                    />
-                    <img
-                      src='https://math.now.sh?from=\frac{\partial \mathcal{L}}{\partial b_2} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial b_2}}_{\text{L2}}'
-                      alt='dL/db2'
-                      className='h-14 md:h-20'
-                      style={{
-                        imageRendering: '-webkit-optimize-contrast',
-                        shapeRendering: 'geometricPrecision',
-                      }}
-                    />
+                    <TeX block math="\frac{\partial \mathcal{L}}{\partial W_2} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial W_2}}_{\text{L2}}" />
+                    <TeX block math="\frac{\partial \mathcal{L}}{\partial b_2} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial b_2}}_{\text{L2}}" />
                   </div>
 
                   <div className='h-px bg-slate-200 w-1/2 mx-auto'></div>
@@ -241,26 +161,10 @@ export default function EducationalSection() {
                   {/* Layer 1 Gradients */}
                   <div className='flex flex-col items-center gap-4'>
                     <span className='text-[11px] text-sky-600 font-bold font-mono'>
-                      Hidden Layer Gradients (L₁)
+                      Hidden Layer Gradients (<TeX math="L_1" />)
                     </span>
-                    <img
-                      src='https://math.now.sh?from=\frac{\partial \mathcal{L}}{\partial W_1} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial \text{ReLU}}}_{\text{L2}} \cdot \underbrace{\frac{\partial \text{ReLU}}{\partial L_1}}_{\text{ReLU}} \cdot \underbrace{\frac{\partial L_1}{\partial W_1}}_{\text{L1}}'
-                      alt='dL/dW1'
-                      className='h-16 md:h-24'
-                      style={{
-                        imageRendering: '-webkit-optimize-contrast',
-                        shapeRendering: 'geometricPrecision',
-                      }}
-                    />
-                    <img
-                      src='https://math.now.sh?from=\frac{\partial \mathcal{L}}{\partial b_1} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial \text{ReLU}}}_{\text{L2}} \cdot \underbrace{\frac{\partial \text{ReLU}}{\partial L_1}}_{\text{ReLU}} \cdot \underbrace{\frac{\partial L_1}{\partial b_1}}_{\text{L1}}'
-                      alt='dL/db1'
-                      className='h-14 md:h-20'
-                      style={{
-                        imageRendering: '-webkit-optimize-contrast',
-                        shapeRendering: 'geometricPrecision',
-                      }}
-                    />
+                    <TeX block math="\frac{\partial \mathcal{L}}{\partial W_1} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial \text{ReLU}}}_{\text{L2}} \cdot \underbrace{\frac{\partial \text{ReLU}}{\partial L_1}}_{\text{ReLU}} \cdot \underbrace{\frac{\partial L_1}{\partial W_1}}_{\text{L1}}" />
+                    <TeX block math="\frac{\partial \mathcal{L}}{\partial b_1} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial \text{ReLU}}}_{\text{L2}} \cdot \underbrace{\frac{\partial \text{ReLU}}{\partial L_1}}_{\text{ReLU}} \cdot \underbrace{\frac{\partial L_1}{\partial b_1}}_{\text{L1}}" />
                   </div>
                 </div>
               </div>
@@ -276,17 +180,7 @@ export default function EducationalSection() {
                 <span className='text-[10px] font-bold text-slate-400 uppercase block mb-3 italic tracking-widest text-center'>
                   Update Step (The Optimizer Rule)
                 </span>
-                <div className='flex justify-center'>
-                  <img
-                    src='https://math.now.sh?from=w \leftarrow w - \eta \frac{\partial L}{\partial w}'
-                    alt='Gradient Descent Formula'
-                    className='h-10 md:h-12'
-                    style={{
-                      imageRendering: '-webkit-optimize-contrast',
-                      shapeRendering: 'geometricPrecision',
-                    }}
-                  />
-                </div>
+                <TeX block math="w \leftarrow w - \eta \frac{\partial L}{\partial w}" />
               </div>
             </div>
           </div>
@@ -299,17 +193,7 @@ export default function EducationalSection() {
           </h3>
           <p className='mb-6'>
             Why do we use activation functions like ReLU or Sigmoid? If you nest linear
-            functions without activations (e.g.,{' '}
-            <img
-              src='https://math.now.sh?from=L_2(L_1(X))'
-              alt='Linear Function Composition'
-              className='inline-block h-4 align-middle mx-1'
-              style={{
-                imageRendering: '-webkit-optimize-contrast',
-                shapeRendering: 'geometricPrecision',
-              }}
-            />
-            ), mathematically it collapses into just one big linear layer. The network
+            functions without activations (e.g., <TeX math="L_2(L_1(X))" />), mathematically it collapses into just one big linear layer. The network
             would only be able to map straight lines! Activations are non-linear
             transformations that allow networks to "bend" their understanding and capture
             highly complex patterns.
@@ -319,15 +203,7 @@ export default function EducationalSection() {
             <span className='text-xs font-bold text-indigo-400 uppercase tracking-widest mb-4'>
               The "Linear Collapse" Proof
             </span>
-            <img
-              src="https://math.now.sh?from=f_2(f_1(x)) = (xW_1 %2B b_1)W_2 %2B b_2 = x\underbrace{(W_1W_2)}_{W'} %2B \underbrace{(b_1W_2 %2B b_2)}_{b'} = xW' %2B b'"
-              alt='Mathematical Proof of Linear Collapse'
-              className='h-16 md:h-20'
-              style={{
-                imageRendering: '-webkit-optimize-contrast',
-                shapeRendering: 'geometricPrecision',
-              }}
-            />
+            <TeX block math="f_2(f_1(x)) = (xW_1 + b_1)W_2 + b_2 = x\underbrace{(W_1W_2)}_{W'} + \underbrace{(b_1W_2 + b_2)}_{b'} = xW' + b'" />
             <div className='mt-6 pt-4 border-t border-indigo-100 w-full max-w-sm overflow-x-auto'>
                <table className='w-full text-[10px] text-indigo-800 border-separate border-spacing-y-1'>
                   <thead>
@@ -341,15 +217,15 @@ export default function EducationalSection() {
                   <tbody className='font-mono'>
                     <tr>
                       <td className='font-bold font-sans pr-4'>Weights (W)</td>
-                      <td className='text-center text-slate-500'>[I × H]</td>
-                      <td className='text-center text-slate-500'>[H × O]</td>
-                      <td className='text-right font-bold text-indigo-600'>[I × O]</td>
+                      <td className='text-center text-slate-500'><TeX math="[I \times H]" /></td>
+                      <td className='text-center text-slate-500'><TeX math="[H \times O]" /></td>
+                      <td className='text-right font-bold text-indigo-600'><TeX math="[I \times O]" /></td>
                     </tr>
                     <tr>
                       <td className='font-bold font-sans pr-4'>Bias (b)</td>
-                      <td className='text-center text-slate-500'>[1 × H]</td>
-                      <td className='text-center text-slate-500'>[1 × O]</td>
-                      <td className='text-right font-bold text-indigo-600'>[1 × O]</td>
+                      <td className='text-center text-slate-500'><TeX math="[1 \times H]" /></td>
+                      <td className='text-center text-slate-500'><TeX math="[1 \times O]" /></td>
+                      <td className='text-right font-bold text-indigo-600'><TeX math="[1 \times O]" /></td>
                     </tr>
                   </tbody>
                </table>
@@ -362,12 +238,7 @@ export default function EducationalSection() {
 
           <div className='bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100 mb-8 flex flex-col items-center'>
             <span className='text-xs font-bold text-emerald-500 uppercase tracking-widest mb-4'>The Breakthrough: Adding ReLU</span>
-            <img 
-              src="https://math.now.sh?from=y = \text{ReLU}(xW_1 %2B b_1)W_2 %2B b_2 \neq xW' %2B b'" 
-              alt="Breakthrough with ReLU" 
-              className="h-8 md:h-10" 
-              style={{ imageRendering: '-webkit-optimize-contrast', shapeRendering: 'geometricPrecision' }}
-            />
+            <TeX block math="y = \text{ReLU}(xW_1 + b_1)W_2 + b_2 \neq xW' + b'" />
             <p className='mt-5 text-[11px] md:text-xs text-emerald-900 text-center max-w-xl font-medium'>
               The "Hidden" neurons are now mathematically protected. Because the expansion is blocked, these neurons are free to learn their own <strong>distinct, specific patterns</strong> without being algebraically swallowed into a single layer. 
             </p>
@@ -393,15 +264,7 @@ export default function EducationalSection() {
                 />
               </svg>
               <div className='flex justify-center mb-3 py-1'>
-                <img
-                  src='https://math.now.sh?from=\text{ReLU}(x) = \max(0,x)'
-                  alt='ReLU Formula'
-                  className='h-6'
-                  style={{
-                    imageRendering: '-webkit-optimize-contrast',
-                    shapeRendering: 'geometricPrecision',
-                  }}
-                />
+                <TeX math='\text{ReLU}(x) = \max(0,x)' />
               </div>
               <p className='text-xs text-left text-slate-600 font-medium text-slate-700'>
                 Used in all hidden layers. Fast to compute, prevents gradients from
@@ -445,18 +308,10 @@ export default function EducationalSection() {
                 />
               </svg>
               <div className='flex justify-center mb-3 py-1'>
-                <img
-                  src='https://math.now.sh?from=\sigma(x) = \frac{1}{1+e^{-x}}'
-                  alt='Sigmoid Formula'
-                  className='h-8 md:h-10'
-                  style={{
-                    imageRendering: '-webkit-optimize-contrast',
-                    shapeRendering: 'geometricPrecision',
-                  }}
-                />
+                <TeX math='\sigma(x) = \frac{1}{1+e^{-x}}' />
               </div>
               <p className='text-xs text-left text-slate-600 font-medium text-slate-700'>
-                Squashes any number into a probability between 0.0 and 1.0. Exclusively
+                Squashes any number into a probability between <TeX math="0.0" /> and <TeX math="1.0" />. Exclusively
                 used as the output layer for Binary Classification.
               </p>
             </div>
@@ -478,15 +333,7 @@ export default function EducationalSection() {
                 ></div>
               </div>
               <div className='flex justify-center mb-3 py-1'>
-                <img
-                  src='https://math.now.sh?from=\text{Softmax}(z)_i = \frac{e^{z_i}}{\sum e^{z_j}}'
-                  alt='Softmax Formula'
-                  className='h-10 md:h-12'
-                  style={{
-                    imageRendering: '-webkit-optimize-contrast',
-                    shapeRendering: 'geometricPrecision',
-                  }}
-                />
+                <TeX math='\text{Softmax}(z)_i = \frac{e^{z_i}}{\sum e^{z_j}}' />
               </div>
               <p className='text-xs text-left text-slate-600 font-medium text-slate-700'>
                 Used as the output layer for Multiclass Classification. It ensures all
