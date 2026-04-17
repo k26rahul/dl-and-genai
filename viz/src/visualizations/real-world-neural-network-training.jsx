@@ -1128,43 +1128,46 @@ export default function App() {
 
               {/* Dataset Stats Bar */}
               {dataLoaded && rawData && (
-                <div className='bg-slate-700 px-3 md:px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] md:text-xs font-mono'>
-                  <div className='text-slate-300 w-full sm:w-auto mb-1 sm:mb-0 pb-1 sm:pb-0 border-b border-slate-600 sm:border-0 flex items-start flex-1'>
-                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1 min-w-max'>Features ({rawData.features.length}):</span>
-                    <div className='text-emerald-400 break-words leading-snug max-h-10 overflow-y-auto custom-scrollbar pr-2 w-full'>
+                <div className='bg-slate-700 px-3 md:px-4 py-2 flex flex-col gap-2 text-[10px] md:text-xs font-mono'>
+                  {/* Top Stats */}
+                  <div className='flex flex-wrap items-center gap-x-4 gap-y-1 pb-1 md:pb-2 border-b border-slate-600'>
+                    <span className='text-slate-300'>
+                      <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Size:</span>
+                      <span className='text-sky-300'>
+                        {dsConfig?.sizeBytes 
+                          ? dsConfig.sizeBytes > 1024 * 1024 
+                            ? `${(dsConfig.sizeBytes / (1024 * 1024)).toFixed(2)} MB`
+                            : `${(dsConfig.sizeBytes / 1024).toFixed(0)} KB`
+                          : '???'}
+                      </span>
+                    </span>
+                    <span className='hidden sm:inline text-slate-500'>|</span>
+                    <span className='text-slate-300'>
+                      <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Total Rows:</span>
+                      <span className='text-yellow-300'>{totalRows}</span>
+                    </span>
+                    <span className='text-slate-500'>|</span>
+                    <span className='text-slate-300'>
+                      <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Train:</span>
+                      <span className='text-blue-300'>{trainRows} rows</span>
+                      <span className='text-slate-500 mx-1'>/</span>
+                      <span className='text-blue-400'>{trainBatches} batches</span>
+                    </span>
+                    <span className='text-slate-500'>|</span>
+                    <span className='text-slate-300'>
+                      <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Test:</span>
+                      <span className='text-orange-300'>{testRows} rows</span>
+                      <span className='text-slate-500 mx-1'>/</span>
+                      <span className='text-orange-400'>{testBatches} batches</span>
+                    </span>
+                  </div>
+                  {/* Full-width Features List */}
+                  <div className='flex flex-col sm:flex-row flex-nowrap items-start gap-1 sm:gap-2 w-full'>
+                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold min-w-max mt-0.5'>Features ({rawData.features.length}):</span>
+                    <div className='text-emerald-400 break-words leading-relaxed w-full max-h-24 overflow-y-auto custom-scrollbar pr-2 mt-px'>
                       {rawData.features.join(' · ')}
                     </div>
                   </div>
-                  <span className='hidden sm:inline text-slate-500'>|</span>
-                  <span className='text-slate-300'>
-                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Size:</span>
-                    <span className='text-sky-300'>
-                      {dsConfig?.sizeBytes 
-                        ? dsConfig.sizeBytes > 1024 * 1024 
-                          ? `${(dsConfig.sizeBytes / (1024 * 1024)).toFixed(2)} MB`
-                          : `${(dsConfig.sizeBytes / 1024).toFixed(0)} KB`
-                        : '???'}
-                    </span>
-                  </span>
-                  <span className='text-slate-500'>|</span>
-                  <span className='text-slate-300'>
-                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Total Rows:</span>
-                    <span className='text-yellow-300'>{totalRows}</span>
-                  </span>
-                  <span className='text-slate-500'>|</span>
-                  <span className='text-slate-300'>
-                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Train:</span>
-                    <span className='text-blue-300'>{trainRows} rows</span>
-                    <span className='text-slate-500 mx-1'>/</span>
-                    <span className='text-blue-400'>{trainBatches} batches</span>
-                  </span>
-                  <span className='text-slate-500'>|</span>
-                  <span className='text-slate-300'>
-                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Test:</span>
-                    <span className='text-orange-300'>{testRows} rows</span>
-                    <span className='text-slate-500 mx-1'>/</span>
-                    <span className='text-orange-400'>{testBatches} batches</span>
-                  </span>
                 </div>
               )}
 
