@@ -719,11 +719,23 @@ export default function App() {
                     disabled={isTraining || downloadProgress !== null}
                     className='bg-slate-50 border border-slate-300 rounded-md px-2 py-1.5 text-xs md:text-sm font-semibold'
                   >
-                    {Object.values(allDatasets).map(ds => (
-                      <option key={ds.id} value={ds.id}>
-                        {ds.name}
-                      </option>
-                    ))}
+                    {['Binary Classification', 'Multiclass Classification', 'Regression'].map(groupName => {
+                      const groupDatasets = Object.values(allDatasets).filter(ds => {
+                        if (groupName === 'Binary Classification') return ds.type === 'classification' && ds.classes === 2;
+                        if (groupName === 'Multiclass Classification') return ds.type === 'classification' && ds.classes > 2;
+                        return ds.type === 'regression';
+                      });
+                      if (groupDatasets.length === 0) return null;
+                      return (
+                        <optgroup key={groupName} label={groupName}>
+                          {groupDatasets.map(ds => (
+                            <option key={ds.id} value={ds.id}>
+                              {ds.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      );
+                    })}
                   </select>
                 </div>
 
@@ -1117,9 +1129,20 @@ export default function App() {
               {/* Dataset Stats Bar */}
               {dataLoaded && rawData && (
                 <div className='bg-slate-700 px-3 md:px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] md:text-xs font-mono'>
+                  <span className='text-slate-300 w-full sm:w-auto mb-1 sm:mb-0 pb-1 sm:pb-0 border-b border-slate-600 sm:border-0'>
+                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Features ({rawData.features.length}):</span>
+                    <span className='text-emerald-400 break-words leading-relaxed'>{rawData.features.join(' · ')}</span>
+                  </span>
+                  <span className='hidden sm:inline text-slate-500'>|</span>
                   <span className='text-slate-300'>
-                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Features:</span>
-                    <span className='text-emerald-400'>{rawData.features.join(' · ')}</span>
+                    <span className='text-slate-500 uppercase tracking-wide font-sans font-bold mr-1'>Size:</span>
+                    <span className='text-sky-300'>
+                      {dsConfig?.sizeBytes 
+                        ? dsConfig.sizeBytes > 1024 * 1024 
+                          ? `${(dsConfig.sizeBytes / (1024 * 1024)).toFixed(2)} MB`
+                          : `${(dsConfig.sizeBytes / 1024).toFixed(0)} KB`
+                        : '???'}
+                    </span>
                   </span>
                   <span className='text-slate-500'>|</span>
                   <span className='text-slate-300'>
