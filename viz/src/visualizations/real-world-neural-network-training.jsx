@@ -131,7 +131,7 @@ export default function App() {
   const trainIndicesRef = useRef([]);
   const testIndicesRef = useRef([]);
   const normStatsRef = useRef(null);
-  const [isTrainTableOpen, setIsTrainTableOpen] = useState(true);
+  const [isTrainTableOpen, setIsTrainTableOpen] = useState(false);
   const [isTestTableOpen, setIsTestTableOpen] = useState(true);
 
   // --- UI State ---
