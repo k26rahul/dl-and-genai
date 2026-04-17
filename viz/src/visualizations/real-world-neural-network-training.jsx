@@ -357,7 +357,7 @@ export default function App() {
       model.compile({
         optimizer: tf.train.adam(baseLr),
         loss: dsConfig.loss,
-        metrics: [dsConfig.metric],
+        metrics: [dsConfig.metric === 'meanAbsoluteError' ? 'mae' : dsConfig.metric],
       });
 
       modelRef.current = model;
