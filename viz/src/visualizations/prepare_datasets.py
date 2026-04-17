@@ -95,6 +95,7 @@ try:
       "activation": "sigmoid",
       "loss": "binaryCrossentropy",
       "metric": "accuracy",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic)",
     },
   )
 except Exception as e:
@@ -123,6 +124,7 @@ try:
       "activation": "softmax",
       "loss": "categoricalCrossentropy",
       "metric": "accuracy",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/iris",
     },
   )
 except Exception as e:
@@ -157,6 +159,7 @@ try:
       "activation": "linear",
       "loss": "meanSquaredError",
       "metric": "meanAbsoluteError",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/auto+mpg",
     },
   )
 except Exception as e:
@@ -206,6 +209,7 @@ try:
       "activation": "sigmoid",
       "loss": "binaryCrossentropy",
       "metric": "accuracy",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/spambase",
     },
   )
 except Exception as e:
@@ -242,6 +246,7 @@ try:
       "activation": "sigmoid",
       "loss": "binaryCrossentropy",
       "metric": "accuracy",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/magic+gamma+telescope",
     },
   )
 except Exception as e:
@@ -277,6 +282,7 @@ try:
       "activation": "sigmoid",
       "loss": "binaryCrossentropy",
       "metric": "accuracy",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/ionosphere",
     },
   )
 except Exception as e:
@@ -310,6 +316,7 @@ try:
       "activation": "sigmoid",
       "loss": "binaryCrossentropy",
       "metric": "accuracy",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/wine+quality",
     },
   )
 except Exception as e:
@@ -347,6 +354,7 @@ try:
       "activation": "sigmoid",
       "loss": "binaryCrossentropy",
       "metric": "accuracy",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/heart+disease",
     },
   )
 except Exception as e:
@@ -396,6 +404,7 @@ try:
       "activation": "sigmoid",
       "loss": "binaryCrossentropy",
       "metric": "accuracy",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/mushroom",
     },
   )
 except Exception as e:
@@ -466,6 +475,7 @@ try:
       "activation": "sigmoid",
       "loss": "binaryCrossentropy",
       "metric": "accuracy",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/adult",
     },
   )
 except Exception as e:
@@ -507,6 +517,7 @@ try:
       "activation": "linear",
       "loss": "meanSquaredError",
       "metric": "meanAbsoluteError",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/abalone",
     },
   )
 except Exception as e:
@@ -545,6 +556,7 @@ try:
       "activation": "linear",
       "loss": "meanSquaredError",
       "metric": "meanAbsoluteError",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/concrete+compressive+strength",
     },
   )
 except Exception as e:
@@ -588,6 +600,7 @@ try:
       "activation": "linear",
       "loss": "meanSquaredError",
       "metric": "meanAbsoluteError",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/Energy+efficiency",
     },
   )
 
@@ -605,6 +618,7 @@ try:
       "activation": "linear",
       "loss": "meanSquaredError",
       "metric": "meanAbsoluteError",
+      "sourceUrl": "https://archive.ics.uci.edu/ml/datasets/Energy+efficiency",
     },
   )
 except Exception as e:

@@ -1129,6 +1129,28 @@ export default function App() {
               {/* Dataset Stats Bar */}
               {dataLoaded && rawData && (
                 <div className='bg-slate-700 px-3 md:px-4 py-2 flex flex-col gap-2 text-[10px] md:text-xs font-mono'>
+                  {/* Description & Link */}
+                  {dsConfig && dsConfig.description && (
+                    <div className='text-slate-300 pb-1 md:pb-2 border-b border-slate-600 font-sans leading-relaxed'>
+                      <p className='text-[10px] md:text-[13px]'>
+                        {dsConfig.description}
+                        {dsConfig.sourceUrl && (
+                          <a
+                            href={dsConfig.sourceUrl}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='ml-2 inline-flex items-center gap-1 text-sky-400 hover:text-sky-300 font-semibold transition-colors'
+                          >
+                            Source Data
+                            <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14' />
+                            </svg>
+                          </a>
+                        )}
+                      </p>
+                    </div>
+                  )}
+
                   {/* Top Stats */}
                   <div className='flex flex-wrap items-center gap-x-4 gap-y-1 pb-1 md:pb-2 border-b border-slate-600'>
                     <span className='text-slate-300'>
