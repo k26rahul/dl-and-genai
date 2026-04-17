@@ -119,14 +119,65 @@ export default function App() {
   const isTrainingRef = useRef(false); // For async interruption
   const [epoch, setEpoch] = useState(0);
   const [history, setHistory] = useState([]);
-  const [predictions, setPredictions] = useState([]); // Store live predictions
+  const [predictions, setPredictions] = useState({ train: null, test: null });
   const [currentLr, setCurrentLr] = useState(baseLr);
   const modelRef = useRef(null);
 
+  // --- Data Preview States ---
+  const [dataSplit, setDataSplit] = useState(null);
+  const splitRef = useRef(null);
+  const [trainIndices, setTrainIndices] = useState([]);
+  const [testIndices, setTestIndices] = useState([]);
+  const trainIndicesRef = useRef([]);
+  const testIndicesRef = useRef([]);
+  const normStatsRef = useRef(null);
+  const [isTrainTableOpen, setIsTrainTableOpen] = useState(true);
+  const [isTestTableOpen, setIsTestTableOpen] = useState(true);
 
   // --- UI State ---
   const [isTableOpen, setIsTableOpen] = useState(false);
   const [expandedLayers, setExpandedLayers] = useState({});
+
+  const get10Random = max => {
+    if (!max) return [];
+    const arr = [];
+    for (let i = 0; i < Math.min(10, max); i++) arr.push(Math.floor(Math.random() * max));
+    return arr;
+  };
+
+  const updatePredictionsForIndices = (tIdx, tsIdx) => {
+    if (!modelRef.current || !splitRef.current || !normStatsRef.current) return;
+    tf.tidy(() => {
+      const mean = tf.tensor1d(normStatsRef.current.mean);
+      const std = tf.tensor1d(normStatsRef.current.std);
+      const trSelect = tIdx.map(i => splitRef.current.trainX[i]);
+      const tsSelect = tsIdx.map(i => splitRef.current.testX[i]);
+      
+      let trPred = null, tsPred = null;
+      if (trSelect.length > 0) trPred = modelRef.current.predict(tf.tensor2d(trSelect).sub(mean).div(std)).arraySync();
+      if (tsSelect.length > 0) tsPred = modelRef.current.predict(tf.tensor2d(tsSelect).sub(mean).div(std)).arraySync();
+      
+      setPredictions({ train: trPred, test: tsPred });
+    });
+  };
+
+  const rollTrainDice = (e) => {
+    e.stopPropagation();
+    if (!splitRef.current) return;
+    const idx = get10Random(splitRef.current.trainX.length);
+    setTrainIndices(idx);
+    trainIndicesRef.current = idx;
+    updatePredictionsForIndices(idx, testIndicesRef.current);
+  };
+
+  const rollTestDice = (e) => {
+    e.stopPropagation();
+    if (!splitRef.current) return;
+    const idx = get10Random(splitRef.current.testX.length);
+    setTestIndices(idx);
+    testIndicesRef.current = idx;
+    updatePredictionsForIndices(trainIndicesRef.current, idx);
+  };
 
   // Derived: active dataset config (null while metadata is loading)
   const dsConfig = selectedDataset ? allDatasets[selectedDataset] ?? null : null;
@@ -180,19 +231,33 @@ export default function App() {
     setRawData(null);
     setHistory([]);
     setEpoch(0);
-    setPredictions([]);
+    setPredictions({ train: null, test: null });
     setIsTraining(false);
     isTrainingRef.current = false;
     if (modelRef.current) { modelRef.current.dispose(); modelRef.current = null; }
     setCacheHit(false);
 
     async function load() {
+      const processData = (data) => {
+        setRawData(data);
+        setDataLoaded(true);
+        const shuffled = shuffleData(data.X, data.y);
+        const split = splitData(shuffled.shuffledX, shuffled.shuffledY, 0.8);
+        setDataSplit(split);
+        splitRef.current = split;
+        const tIdx = get10Random(split.trainX.length);
+        const tsIdx = get10Random(split.testX.length);
+        setTrainIndices(tIdx);
+        setTestIndices(tsIdx);
+        trainIndicesRef.current = tIdx;
+        testIndicesRef.current = tsIdx;
+      };
+
       // 1. Try IndexedDB first
       try {
         const cached = await idbGet(cacheKey);
         if (cached && !cancelled) {
-          setRawData(cached);
-          setDataLoaded(true);
+          processData(cached);
           setCacheHit(true);
           return;
         }
@@ -233,8 +298,7 @@ export default function App() {
         try { await idbSet(cacheKey, data); } catch (_) { /* quota full — skip */ }
 
         if (!cancelled) {
-          setRawData(data);
-          setDataLoaded(true);
+          processData(data);
         }
       } catch (err) {
         if (!cancelled) console.error('Dataset fetch failed:', err);
@@ -272,11 +336,14 @@ export default function App() {
     }
     setHistory([]);
     setEpoch(0);
-    setPredictions([]);
+    setPredictions({ train: null, test: null });
 
     // 1. Data Prep (Shuffle & Split)
     const shuffled = shuffleData(rawData.X, rawData.y);
     const { trainX, trainY, testX, testY } = splitData(shuffled.shuffledX, shuffled.shuffledY, 0.8);
+    const split = { trainX, trainY, testX, testY };
+    setDataSplit(split);
+    splitRef.current = split;
 
     // 2. TFJS Tensors & Normalization
     tf.engine().startScope(); // Memory management
@@ -289,13 +356,10 @@ export default function App() {
     // Standardization (Z-score normalization based ONLY on train data)
     const mean = xTrainRaw.mean(0);
     const std = xTrainRaw.squaredDifference(mean).mean(0).sqrt().add(1e-7);
+    normStatsRef.current = { mean: mean.arraySync(), std: std.arraySync() };
 
     const xTrainNorm = xTrainRaw.sub(mean).div(std);
     const xTestNorm = xTestRaw.sub(mean).div(std);
-
-    // Prepare preview tensor for the table (always first 20 samples to keep UI fast)
-    const previewRaw = tf.tensor2d(rawData.X.slice(0, 20));
-    const previewNorm = previewRaw.sub(mean).div(std);
 
     // 3. Build Model (always fresh start)
     const model = tf.sequential();
@@ -369,10 +433,9 @@ export default function App() {
       ]);
       setEpoch(e);
 
-      // Update live predictions for the Data Preview (every 2 epochs to keep UI snappy)
-      if (isTableOpen && e % 2 === 0) {
-        const predsArray = model.predict(previewNorm).arraySync();
-        setPredictions(predsArray);
+      // Update live predictions
+      if ((isTrainTableOpen || isTestTableOpen) && e % 2 === 0) {
+        updatePredictionsForIndices(trainIndicesRef.current, testIndicesRef.current);
       }
 
       // Throttling
@@ -384,8 +447,7 @@ export default function App() {
     }
 
     // Final prediction fetch when training finishes
-    const finalPredsArray = model.predict(previewNorm).arraySync();
-    setPredictions(finalPredsArray);
+    updatePredictionsForIndices(trainIndicesRef.current, testIndicesRef.current);
 
     setIsTraining(false);
     isTrainingRef.current = false;
@@ -523,6 +585,83 @@ export default function App() {
       </div>
     );
   }
+
+  const renderPreviewTable = (type, indices, dataX, dataY, predArrayGroup, isOpen, toggleOpen, diceRoll) => {
+    if (!dataX || !dataY || indices.length === 0) return null;
+    return (
+      <div className='bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col overflow-hidden mb-3'>
+        <div 
+          className='bg-slate-800 p-2 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition-colors' 
+          onClick={toggleOpen}
+        >
+          <h2 className='text-xs font-bold text-white flex items-center gap-2'>
+            {type === 'Train' ? '🚂' : '🧪'} {type} Samples (10 random)
+          </h2>
+          <div className='flex items-center gap-3'>
+             <button onClick={diceRoll} className='text-lg hover:scale-110 transition-transform' title='Randomize'>🎲</button>
+             <span className='text-slate-400 text-[10px]'>{isOpen ? '▼' : '▶'}</span>
+          </div>
+        </div>
+        {isOpen && (
+          <div className='overflow-x-auto p-0 border-t border-slate-200'>
+            <table className='w-full text-left border-collapse'>
+              <thead>
+                <tr className='bg-slate-100 text-[9px] md:text-[10px] text-slate-500 uppercase tracking-wider border-b border-slate-200'>
+                  <th className='px-2 py-1 font-semibold w-12'>Index</th>
+                  <th className='px-2 py-1 font-semibold'>Features (X)</th>
+                  <th className='px-2 py-1 font-semibold text-center'>Pred</th>
+                  <th className='px-2 py-1 font-semibold text-center'>True</th>
+                  <th className='px-2 py-1 font-semibold text-right'>Err</th>
+                </tr>
+              </thead>
+              <tbody>
+                {indices.map((idx, i) => {
+                   const x = dataX[idx];
+                   const trueDisplay = dsConfig.type === 'classification' ? (dsConfig.classes === 2 ? dataY[idx][0] : dataY[idx].indexOf(1)) : dataY[idx][0];
+                   const predArray = predArrayGroup ? predArrayGroup[i] : null;
+                   
+                   let predDisplay = '---', errDisplay = '---', isCorrect = false;
+                   if (predArray) {
+                     if (dsConfig.type === 'classification') {
+                       if (dsConfig.classes === 2) {
+                         const p = predArray[0];
+                         predDisplay = p.toFixed(4);
+                         isCorrect = (p >= 0.5 ? 1 : 0) === trueDisplay;
+                         const pClipped = Math.max(1e-9, Math.min(p, 1 - 1e-9));
+                         errDisplay = (-(trueDisplay * Math.log(pClipped) + (1 - trueDisplay) * Math.log(1 - pClipped))).toFixed(4);
+                       } else {
+                         const pClass = predArray.indexOf(Math.max(...predArray));
+                         predDisplay = `Class ${pClass}`;
+                         isCorrect = pClass === trueDisplay;
+                         const pClipped = Math.max(1e-9, Math.min(predArray[trueDisplay], 1 - 1e-9));
+                         errDisplay = (-Math.log(pClipped)).toFixed(4);
+                       }
+                     } else {
+                       predDisplay = predArray[0].toFixed(4);
+                       errDisplay = Math.abs(predArray[0] - trueDisplay).toFixed(4);
+                     }
+                   }
+
+                   const rowColor = (isTraining || predArrayGroup) && predArray ? (isCorrect && dsConfig.type === 'classification' ? 'bg-green-50/50' : (dsConfig.type === 'classification' ? 'bg-red-50/50' : 'bg-blue-50/50')) : '';
+                   return (
+                     <tr key={idx} className={`border-b border-slate-100 font-mono text-[9px] md:text-[11px] ${rowColor}`}>
+                       <td className='px-2 py-1 text-slate-400'>#{idx}</td>
+                       <td className='px-2 py-1 text-slate-600 truncate max-w-[150px]'>
+                         [{x.slice(0, 4).map(v => v.toFixed(1)).join(', ')}{x.length > 4 ? '...' : ''}]
+                       </td>
+                       <td className='px-2 py-1 text-center font-bold text-blue-600'>{predDisplay}</td>
+                       <td className='px-2 py-1 text-center font-bold text-slate-800'>{trueDisplay}</td>
+                       <td className='px-2 py-1 text-right text-red-500'>{errDisplay}</td>
+                     </tr>
+                   );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className='min-h-screen bg-slate-50 text-slate-800 p-2 md:p-4 font-sans'>
@@ -1075,104 +1214,10 @@ export default function App() {
                 </div>
               )}
 
-              {isTableOpen && dataLoaded && rawData && (
-                <div className='p-2 md:p-4 overflow-x-auto custom-scrollbar max-h-64 lg:max-h-[500px] overflow-y-auto'>
-                  <table className='w-full text-[10px] md:text-sm text-left min-w-[400px]'>
-                    <thead className='text-[9px] md:text-[10px] text-slate-500 bg-slate-50 uppercase border-b border-slate-200'>
-                      <tr>
-                        <th className='px-2 py-1.5 md:px-3 md:py-2'>ID</th>
-                        <th className='px-2 py-1.5 md:px-3 md:py-2'>Inputs (X)</th>
-                        <th className='px-2 py-1.5 md:px-3 md:py-2 text-center text-blue-700 font-bold'>
-                          Pred (Output)
-                        </th>
-                        <th className='px-2 py-1.5 md:px-3 md:py-2 text-center'>
-                          True (Y)
-                        </th>
-                        <th className='px-2 py-1.5 md:px-3 md:py-2 text-right'>Error</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rawData.X.slice(0, 20).map((x, i) => {
-                        const predArray = predictions[i];
-                        let predDisplay = '---';
-                        let trueDisplay = '---';
-                        let errDisplay = '---';
-                        let isCorrect = false;
-
-                        if (dsConfig.type === 'classification') {
-                          if (dsConfig.classes === 2) {
-                            trueDisplay = rawData.y[i][0];
-                            if (predArray) {
-                              const p = predArray[0];
-                              predDisplay = p.toFixed(4);
-                              isCorrect = (p >= 0.5 ? 1 : 0) === trueDisplay;
-                              const pClipped = clip(p, 1e-9, 1 - 1e-9);
-                              errDisplay = (-(
-                                trueDisplay * Math.log(pClipped) +
-                                (1 - trueDisplay) * Math.log(1 - pClipped)
-                              )).toFixed(4);
-                            }
-                          } else {
-                            trueDisplay = rawData.y[i].indexOf(1);
-                            if (predArray) {
-                              const pClass = predArray.indexOf(Math.max(...predArray));
-                              predDisplay = `Class ${pClass}`;
-                              isCorrect = pClass === trueDisplay;
-                              const pClipped = clip(
-                                predArray[trueDisplay],
-                                1e-9,
-                                1 - 1e-9,
-                              );
-                              errDisplay = (-Math.log(pClipped)).toFixed(4);
-                            }
-                          }
-                        } else {
-                          trueDisplay = rawData.y[i][0];
-                          if (predArray) {
-                            predDisplay = predArray[0].toFixed(4);
-                            errDisplay = Math.abs(predArray[0] - trueDisplay).toFixed(4);
-                          }
-                        }
-
-                        const rowColor =
-                          (isTraining || predictions.length > 0) && predArray
-                            ? isCorrect && dsConfig.type === 'classification'
-                              ? 'bg-green-50/50'
-                              : dsConfig.type === 'classification'
-                                ? 'bg-red-50/50'
-                                : 'bg-blue-50/50'
-                            : '';
-
-                        return (
-                          <tr
-                            key={i}
-                            className={`border-b border-slate-100 font-mono text-[10px] md:text-[13px] ${rowColor}`}
-                          >
-                            <td className='px-2 py-1.5 md:px-3 md:py-2 text-slate-400'>
-                              #{i}
-                            </td>
-                            <td className='px-2 py-1.5 md:px-3 md:py-2 text-slate-600 truncate max-w-[150px]'>
-                              [
-                              {x
-                                .slice(0, 4)
-                                .map(v => v.toFixed(1))
-                                .join(', ')}
-                              {x.length > 4 ? '...' : ''}]
-                            </td>
-                            <td className='px-2 py-1.5 md:px-3 md:py-2 text-center font-bold text-blue-600'>
-                              {predDisplay}
-                            </td>
-                            <td className='px-2 py-1.5 md:px-3 md:py-2 text-center font-bold text-slate-800'>
-                              {trueDisplay}
-                            </td>
-                            <td className='px-2 py-1.5 md:px-3 md:py-2 text-right text-red-500'>
-                              {errDisplay}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+              {isTableOpen && dataSplit && (
+                <div className='flex flex-col gap-2 p-2'>
+                  {renderPreviewTable('Train', trainIndices, dataSplit.trainX, dataSplit.trainY, predictions.train, isTrainTableOpen, () => setIsTrainTableOpen(!isTrainTableOpen), rollTrainDice)}
+                  {renderPreviewTable('Test', testIndices, dataSplit.testX, dataSplit.testY, predictions.test, isTestTableOpen, () => setIsTestTableOpen(!isTestTableOpen), rollTestDice)}
                 </div>
               )}
             </div>
