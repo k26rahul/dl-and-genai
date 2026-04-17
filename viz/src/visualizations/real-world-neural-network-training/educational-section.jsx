@@ -124,10 +124,11 @@ export default function EducationalSection() {
             2. Under the Hood: Math & Architecture
           </h3>
 
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+          <div className='space-y-16'>
+            {/* 2.1 The Neuron & Linear Algebra */}
             <div>
-              <h4 className='font-bold mb-2'>The Neuron & Linear Algebra</h4>
-              <p className='mb-3'>
+              <h4 className='font-bold text-xl text-slate-800 mb-4'>The Neuron & Linear Algebra</h4>
+              <p className='text-slate-600 mb-4'>
                 At the core of every neuron is a basic linear formula:{' '}
                 <img
                   src='https://math.now.sh?from=z=(w\cdot{x})%2Bb'
@@ -142,7 +143,7 @@ export default function EducationalSection() {
                 weight (<strong>w</strong>), and a bias (<strong>b</strong>) is added to
                 shift the result.
               </p>
-              <p className='mb-3'>
+              <p className='text-slate-600 mb-6'>
                 Instead of computing this one-by-one, modern networks use{' '}
                 <strong>Matrices</strong>. We group many features and many weights
                 together:{' '}
@@ -157,7 +158,7 @@ export default function EducationalSection() {
                 />
                 .
               </p>
-              <div className='bg-slate-50 p-4 rounded-xl border border-slate-200 flex justify-center mb-4'>
+              <div className='bg-slate-50 p-6 rounded-2xl border border-slate-200 flex justify-center'>
                 <img
                   src='https://math.now.sh?from=\underbrace{[B \times F]}_{\text{Input Matrix}} \times \underbrace{[F \times N]}_{\text{Weight Matrix}} %2B \underbrace{[1 \times N]}_{\text{Bias Vector}} = \underbrace{[B \times N]}_{\text{Layer Output}}'
                   alt='Matrix Multiplication Shapes'
@@ -170,40 +171,122 @@ export default function EducationalSection() {
               </div>
             </div>
 
+            {/* 2.2 Backpropagation & The Chain Rule */}
             <div>
-              <h4 className='font-bold mb-2'>Backpropagation & The Chain Rule</h4>
-              <p className='mb-2'>
+              <h4 className='font-bold text-xl text-slate-800 mb-4'>Backpropagation & The Chain Rule</h4>
+              <p className='text-slate-600 mb-4'>
                 A neural network is mathematically just a massive nested function call:
               </p>
-              <div className='bg-slate-900 p-4 md:p-6 rounded-xl mb-4 flex justify-center overflow-x-auto'>
+              <div className='bg-slate-50 p-6 md:p-8 rounded-2xl mb-6 flex justify-center overflow-x-auto border border-slate-200'>
                 <img
                   src='https://math.now.sh?from=\mathcal{L}=\text{CE}\left(\sigma\left(L_2\left(\text{ReLu}(L_1(X))\right)\right), Y_{true}\right)'
                   alt='Backpropagation Chain Rule Formula'
-                  className='h-8 md:h-10 invert brightness-200'
-                  style={{
-                    imageRendering: '-webkit-optimize-contrast',
-                    shapeRendering: 'geometricPrecision',
-                  }}
-                />
-              </div>
-              <p>
-                To learn, the network must figure out how changing one specific weight
-                deep inside <img src="https://math.now.sh?from=L_1" alt="Layer 1" className="inline-block h-3 align-middle mx-0.5" style={{ imageRendering: '-webkit-optimize-contrast', shapeRendering: 'geometricPrecision' }} /> will affect the final <code>Loss</code>. It
-                does this step-by-step backward from the error, applying calculus (the{' '}
-                <strong>Chain Rule</strong>). This process of moving the error backward to
-                update weights via Gradient Descent is called{' '}
-                <strong>Backpropagation</strong>.
-              </p>
-              <div className='flex justify-center mt-4 mb-2'>
-                <img
-                  src='https://math.now.sh?from=w \leftarrow w - \eta \frac{\partial L}{\partial w}'
-                  alt='Gradient Descent Formula'
                   className='h-8 md:h-10'
                   style={{
                     imageRendering: '-webkit-optimize-contrast',
                     shapeRendering: 'geometricPrecision',
                   }}
                 />
+              </div>
+              <p className='text-slate-600 mb-6'>
+                To learn, the network must figure out how changing one specific weight
+                deep inside{' '}
+                <img
+                  src='https://math.now.sh?from=L_1'
+                  alt='Layer 1'
+                  className='inline-block h-3 align-middle mx-0.5'
+                  style={{
+                    imageRendering: '-webkit-optimize-contrast',
+                    shapeRendering: 'geometricPrecision',
+                  }}
+                />{' '}
+                will affect the final <code>Loss</code>. It does this step-by-step backward
+                from the error, applying calculus (the <strong>Chain Rule</strong>). This
+                entire process is called <strong>Backpropagation</strong>.
+              </p>
+
+              <div className='bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-200 overflow-x-auto'>
+                <span className='text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-6 text-center italic'>
+                  The Chained Gradient Expansion
+                </span>
+
+                <div className='space-y-8 min-w-[600px]'>
+                  {/* Layer 2 Gradients */}
+                  <div className='flex flex-col items-center gap-4'>
+                    <span className='text-[11px] text-emerald-600 font-bold font-mono'>
+                      Output Layer Gradients (L₂)
+                    </span>
+                    <img
+                      src='https://math.now.sh?from=\frac{\partial \mathcal{L}}{\partial W_2} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial W_2}}_{\text{L2}}'
+                      alt='dL/dW2'
+                      className='h-16 md:h-24'
+                      style={{
+                        imageRendering: '-webkit-optimize-contrast',
+                        shapeRendering: 'geometricPrecision',
+                      }}
+                    />
+                    <img
+                      src='https://math.now.sh?from=\frac{\partial \mathcal{L}}{\partial b_2} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial b_2}}_{\text{L2}}'
+                      alt='dL/db2'
+                      className='h-14 md:h-20'
+                      style={{
+                        imageRendering: '-webkit-optimize-contrast',
+                        shapeRendering: 'geometricPrecision',
+                      }}
+                    />
+                  </div>
+
+                  <div className='h-px bg-slate-200 w-1/2 mx-auto'></div>
+
+                  {/* Layer 1 Gradients */}
+                  <div className='flex flex-col items-center gap-4'>
+                    <span className='text-[11px] text-sky-600 font-bold font-mono'>
+                      Hidden Layer Gradients (L₁)
+                    </span>
+                    <img
+                      src='https://math.now.sh?from=\frac{\partial \mathcal{L}}{\partial W_1} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial \text{ReLU}}}_{\text{L2}} \cdot \underbrace{\frac{\partial \text{ReLU}}{\partial L_1}}_{\text{ReLU}} \cdot \underbrace{\frac{\partial L_1}{\partial W_1}}_{\text{L1}}'
+                      alt='dL/dW1'
+                      className='h-16 md:h-24'
+                      style={{
+                        imageRendering: '-webkit-optimize-contrast',
+                        shapeRendering: 'geometricPrecision',
+                      }}
+                    />
+                    <img
+                      src='https://math.now.sh?from=\frac{\partial \mathcal{L}}{\partial b_1} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial \text{ReLU}}}_{\text{L2}} \cdot \underbrace{\frac{\partial \text{ReLU}}{\partial L_1}}_{\text{ReLU}} \cdot \underbrace{\frac{\partial L_1}{\partial b_1}}_{\text{L1}}'
+                      alt='dL/db1'
+                      className='h-14 md:h-20'
+                      style={{
+                        imageRendering: '-webkit-optimize-contrast',
+                        shapeRendering: 'geometricPrecision',
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2.3 Gradient Descent */}
+            <div>
+              <h4 className='font-bold text-xl text-slate-800 mb-4'>Gradient Descent</h4>
+              <p className='text-slate-600 mb-4'>
+                Once the gradients are calculated, we use them to nudge the weights in the direction of lower loss.
+              </p>
+              <div className='bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-200'>
+                <span className='text-[10px] font-bold text-slate-400 uppercase block mb-3 italic tracking-widest text-center'>
+                  Update Step (The Optimizer Rule)
+                </span>
+                <div className='flex justify-center'>
+                  <img
+                    src='https://math.now.sh?from=w \leftarrow w - \eta \frac{\partial L}{\partial w}'
+                    alt='Gradient Descent Formula'
+                    className='h-10 md:h-12'
+                    style={{
+                      imageRendering: '-webkit-optimize-contrast',
+                      shapeRendering: 'geometricPrecision',
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
