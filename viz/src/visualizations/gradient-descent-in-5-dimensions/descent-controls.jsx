@@ -1,0 +1,84 @@
+import React from 'react';
+import 'katex/dist/katex.min.css';
+import TeX from '@matejmazur/react-katex';
+import { LightningIcon, PlayIcon, FastIcon, StopIcon } from './assets/icons';
+
+export default function DescentControls({
+  learningRate,
+  setLearningRate,
+  learningRates,
+  playMode,
+  setPlayMode,
+  handleStep,
+}) {
+  return (
+    <div className='order-4 lg:order-none p-2 md:p-3 bg-violet-50 border border-violet-100 rounded-lg md:rounded-xl shadow-sm flex flex-col gap-2'>
+      <div className='flex flex-col sm:flex-row gap-2 items-end'>
+        <div className='flex-1 w-full'>
+          <label className='block text-[10px] md:text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1'>
+            Learning Rate <TeX math='\eta' />
+          </label>
+          <select
+            className='w-full bg-white border border-violet-200 text-violet-900 text-xs md:text-sm rounded-lg p-1.5 md:p-2 shadow-sm font-mono focus:ring-violet-500 focus:border-violet-500'
+            value={learningRate}
+            onChange={e => setLearningRate(Number(e.target.value))}
+          >
+            {learningRates.map((lr, idx) => (
+              <option key={lr} value={lr}>
+                {lr}
+                {idx === 0
+                  ? ' (Very Small)'
+                  : idx === learningRates.length - 1
+                    ? ' (Very Large)'
+                    : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className='flex gap-1.5 w-full sm:w-auto mt-1 sm:mt-0'>
+          <button
+            onClick={handleStep}
+            disabled={playMode !== 0}
+            className={`flex-1 sm:flex-none text-white font-bold py-1.5 px-3 md:py-2 md:px-4 text-xs md:text-sm rounded-lg transition-colors shadow-sm flex items-center justify-center gap-1 ${
+              playMode !== 0
+                ? 'bg-violet-300 cursor-not-allowed'
+                : 'bg-violet-600 hover:bg-violet-700 active:bg-violet-800'
+            }`}
+          >
+            <LightningIcon className='w-3 h-3 md:w-4 md:h-4' />
+            Step
+          </button>
+
+          <button
+            onClick={() => setPlayMode(p => (p + 1) % 3)}
+            className={`flex-1 sm:flex-none font-bold py-1.5 px-3 md:py-2 md:px-4 text-xs md:text-sm rounded-lg transition-colors shadow-sm flex items-center justify-center gap-1 text-white ${
+              playMode === 0
+                ? 'bg-emerald-600 hover:bg-emerald-700'
+                : playMode === 1
+                  ? 'bg-amber-500 hover:bg-amber-600'
+                  : 'bg-rose-500 hover:bg-rose-600'
+            }`}
+          >
+            {playMode === 0 ? (
+              <>
+                <PlayIcon className='w-3 h-3 md:w-4 md:h-4' />
+                Auto
+              </>
+            ) : playMode === 1 ? (
+              <>
+                <FastIcon className='w-3 h-3 md:w-4 md:h-4' />
+                Fast
+              </>
+            ) : (
+              <>
+                <StopIcon className='w-3 h-3 md:w-4 md:h-4' />
+                Stop
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,7 +1,7 @@
-import GradientDescentStepByStep from './visualizations/gradient-descent-step-by-step.jsx'
-import GradientDescent3D from './visualizations/3-d-gradient-descent-partial-derivatives.jsx'
-import GradientDescent5D from './visualizations/gradient-descent-in-5-dimensions.jsx'
-import InsideMLP from './visualizations/inside-the-multi-layer-perceptron.jsx'
+import GradientDescentStepByStep from './visualizations/gradient-descent-step-by-step/index.jsx'
+import GradientDescent3D from './visualizations/3-d-gradient-descent-partial-derivatives/index.jsx'
+import GradientDescent5D from './visualizations/gradient-descent-in-5-dimensions/index.jsx'
+import InsideMLP from './visualizations/inside-the-multi-layer-perceptron/index.jsx'
 import RealWorldNNTraining from './visualizations/real-world-neural-network-training/index.jsx'
 
 const visualizations = [
