@@ -271,14 +271,39 @@
 
 .home-footer {
   text-align: center;
-  padding: 24px;
-  font-size: 0.8rem;
-  color: #334155;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 40px 24px;
+  font-size: 0.85rem;
+  color: #64748b;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.home-build-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px 12px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.home-build-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+  color: #475569;
+}
+
+.home-build-time {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+  color: #94a3b8;
 }
 
 .home-footer-link {
@@ -294,4 +319,14 @@
 
 .home-footer-link:hover {
   color: #94a3b8;
+}
+
+/* ── Utilities ────────────────────────────────────────── */
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

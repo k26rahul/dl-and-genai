@@ -64,7 +64,10 @@ function HomePage() {
       </main>
 
       <footer className="home-footer">
-        <p>Last Build: {import.meta.env.VITE_BUILD_TIME || 'In Development'}</p>
+        <div className="home-build-info">
+          <span className="home-build-label">Last Build</span>
+          <span className="home-build-time">{import.meta.env.VITE_BUILD_TIME || 'In Development'}</span>
+        </div>
         <a
           href="https://github.com/k26rahul/dl-and-genai"
           target="_blank"

@@ -110,8 +110,10 @@ export default function EducationalSection() {
                 <span className='text-white'><TeX math="Z=X\cdot{W}+b" /></span>
                 .
               </p>
-              <div className='bg-slate-950 p-6 rounded-2xl border border-slate-800 flex justify-center text-white opacity-90 overflow-x-auto'>
-                <TeX block math="\underbrace{[B \times F]}_{\text{Input Matrix}} \times \underbrace{[F \times N]}_{\text{Weight Matrix}} + \underbrace{[1 \times N]}_{\text{Bias Vector}} = \underbrace{[B \times N]}_{\text{Layer Output}}" />
+              <div className='bg-slate-950 p-6 rounded-2xl border border-slate-800 flex flex-col items-center text-white opacity-90 overflow-x-auto no-scrollbar'>
+                <div className='w-max min-w-full flex justify-center'>
+                  <TeX block math="\underbrace{[B \times F]}_{\text{Input Matrix}} \times \underbrace{[F \times N]}_{\text{Weight Matrix}} + \underbrace{[1 \times N]}_{\text{Bias Vector}} = \underbrace{[B \times N]}_{\text{Layer Output}}" />
+                </div>
               </div>
             </div>
 
@@ -131,30 +133,40 @@ export default function EducationalSection() {
                 entire process is called <strong>Backpropagation</strong>.
               </p>
 
-              <div className='bg-slate-950 p-6 md:p-8 rounded-2xl border border-slate-800 overflow-x-auto'>
-                <span className='text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-6 text-center italic'>
-                  The Chained Gradient Expansion
-                </span>
+              <div className='bg-slate-950 p-6 md:p-8 rounded-2xl border border-slate-800'>
+                <div className='w-full flex flex-col items-center'>
+                  <span className='text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-8 text-center italic'>
+                    The Chained Gradient Expansion
+                  </span>
 
-                <div className='space-y-8 min-w-[600px]'>
-                  {/* Layer 2 Gradients */}
-                  <div className='flex flex-col items-center gap-4 text-white opacity-90'>
-                    <span className='text-[11px] text-emerald-400 font-bold font-mono'>
-                      Output Layer Gradients (<TeX math="L_2" />)
-                    </span>
-                    <TeX block math="\frac{\partial \mathcal{L}}{\partial W_2} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial W_2}}_{\text{L2}}" />
-                    <TeX block math="\frac{\partial \mathcal{L}}{\partial b_2} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial b_2}}_{\text{L2}}" />
-                  </div>
+                  <div className='space-y-8 w-full'>
+                    {/* Layer 2 Gradients */}
+                    <div className='flex flex-col items-center gap-6 text-white opacity-95'>
+                      <span className='text-[11px] text-emerald-400 font-bold font-mono tracking-wider'>
+                        Output Layer Gradients (<TeX math="L_2" />)
+                      </span>
+                      <div className='w-full overflow-x-auto px-4 no-scrollbar'>
+                        <div className='w-max min-w-full flex flex-col items-center gap-4 py-1'>
+                          <TeX block math="\frac{\partial \mathcal{L}}{\partial W_2} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial W_2}}_{\text{L2}}" />
+                          <TeX block math="\frac{\partial \mathcal{L}}{\partial b_2} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial b_2}}_{\text{L2}}" />
+                        </div>
+                      </div>
+                    </div>
 
-                  <div className='h-px bg-slate-800 w-1/2 mx-auto'></div>
+                    <div className='h-px bg-slate-800 w-1/3 mx-auto'></div>
 
-                  {/* Layer 1 Gradients */}
-                  <div className='flex flex-col items-center gap-4 text-white opacity-90'>
-                    <span className='text-[11px] text-sky-400 font-bold font-mono'>
-                      Hidden Layer Gradients (<TeX math="L_1" />)
-                    </span>
-                    <TeX block math="\frac{\partial \mathcal{L}}{\partial W_1} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial \text{ReLU}}}_{\text{L2}} \cdot \underbrace{\frac{\partial \text{ReLU}}{\partial L_1}}_{\text{ReLU}} \cdot \underbrace{\frac{\partial L_1}{\partial W_1}}_{\text{L1}}" />
-                    <TeX block math="\frac{\partial \mathcal{L}}{\partial b_1} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial \text{ReLU}}}_{\text{L2}} \cdot \underbrace{\frac{\partial \text{ReLU}}{\partial L_1}}_{\text{ReLU}} \cdot \underbrace{\frac{\partial L_1}{\partial b_1}}_{\text{L1}}" />
+                    {/* Layer 1 Gradients */}
+                    <div className='flex flex-col items-center gap-6 text-white opacity-95'>
+                      <span className='text-[11px] text-sky-400 font-bold font-mono tracking-wider'>
+                        Hidden Layer Gradients (<TeX math="L_1" />)
+                      </span>
+                      <div className='w-full overflow-x-auto px-4 no-scrollbar'>
+                        <div className='w-max min-w-full flex flex-col items-center gap-4 py-1'>
+                          <TeX block math="\frac{\partial \mathcal{L}}{\partial W_1} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial \text{ReLU}}}_{\text{L2}} \cdot \underbrace{\frac{\partial \text{ReLU}}{\partial L_1}}_{\text{ReLU}} \cdot \underbrace{\frac{\partial L_1}{\partial W_1}}_{\text{L1}}" />
+                          <TeX block math="\frac{\partial \mathcal{L}}{\partial b_1} = \underbrace{\frac{\partial \text{CE}}{\partial \sigma}}_{\text{Loss}} \cdot \underbrace{\frac{\partial \sigma}{\partial L_2}}_{\text{Sigmoid}} \cdot \underbrace{\frac{\partial L_2}{\partial \text{ReLU}}}_{\text{L2}} \cdot \underbrace{\frac{\partial \text{ReLU}}{\partial L_1}}_{\text{ReLU}} \cdot \underbrace{\frac{\partial L_1}{\partial b_1}}_{\text{L1}}" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -166,11 +178,11 @@ export default function EducationalSection() {
               <p className='text-slate-400 mb-4'>
                 Once the gradients are calculated, we use them to nudge the weights in the direction of lower loss.
               </p>
-              <div className='bg-slate-950 p-6 md:p-8 rounded-2xl border border-slate-800'>
+              <div className='bg-slate-950 p-6 md:p-8 rounded-2xl border border-slate-800 w-full overflow-x-auto no-scrollbar'>
                 <span className='text-[10px] font-bold text-slate-500 uppercase block mb-3 italic tracking-widest text-center'>
                   Update Step (The Optimizer Rule)
                 </span>
-                <div className='text-white opacity-90 flex justify-center'>
+                <div className='text-white opacity-90 w-max min-w-full flex justify-center py-1'>
                   <TeX block math="w \leftarrow w - \eta \frac{\partial L}{\partial w}" />
                 </div>
               </div>
@@ -195,8 +207,10 @@ export default function EducationalSection() {
             <span className='text-xs font-bold text-indigo-400 uppercase tracking-widest mb-4'>
               The "Linear Collapse" Proof
             </span>
-            <div className='text-white opacity-90'>
-              <TeX block math="f_2(f_1(x)) = (xW_1 + b_1)W_2 + b_2 = x\underbrace{(W_1W_2)}_{W'} + \underbrace{(b_1W_2 + b_2)}_{b'} = xW' + b'" />
+            <div className='text-white opacity-90 w-full overflow-x-auto no-scrollbar'>
+              <div className='w-max min-w-full flex justify-center py-1'>
+                <TeX block math="f_2(f_1(x)) = (xW_1 + b_1)W_2 + b_2 = x\underbrace{(W_1W_2)}_{W'} + \underbrace{(b_1W_2 + b_2)}_{b'} = xW' + b'" />
+              </div>
             </div>
             <div className='mt-6 pt-4 border-t border-indigo-900 w-full max-w-sm overflow-x-auto'>
                <table className='w-full text-[10px] text-indigo-200 border-separate border-spacing-y-1'>
@@ -231,8 +245,10 @@ export default function EducationalSection() {
 
           <div className='bg-emerald-950/30 p-6 rounded-2xl border border-emerald-900 mb-8 flex flex-col items-center'>
             <span className='text-xs font-bold text-emerald-400 uppercase tracking-widest mb-4'>The Breakthrough: Adding ReLU</span>
-            <div className='text-white opacity-90'>
-              <TeX block math="y = \text{ReLU}(xW_1 + b_1)W_2 + b_2 \neq xW' + b'" />
+            <div className='text-white opacity-90 w-full overflow-x-auto no-scrollbar'>
+              <div className='w-max min-w-full flex justify-center py-1'>
+                <TeX block math="y = \text{ReLU}(xW_1 + b_1)W_2 + b_2 \neq xW' + b'" />
+              </div>
             </div>
             <p className='mt-5 text-[11px] md:text-xs text-emerald-300 text-center max-w-xl font-medium'>
               The "Hidden" neurons are now mathematically protected. Because the expansion is blocked, these neurons are free to learn their own <strong className='text-white'>distinct, specific patterns</strong> without being algebraically swallowed into a single layer. 
