@@ -5,4 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/dl-and-genai/',
+  define: {
+    'import.meta.env.VITE_BUILD_TIME': JSON.stringify(new Date().toLocaleString('en-US', { timeZoneName: 'short' }))
+  }
 })

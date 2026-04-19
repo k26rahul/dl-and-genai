@@ -64,7 +64,7 @@ function HomePage() {
       </main>
 
       <footer className="home-footer">
-        <p>Made with React · Vite · Three.js &amp; lots of math</p>
+        <p>Last Build: {import.meta.env.VITE_BUILD_TIME || 'In Development'}</p>
         <a
           href="https://github.com/k26rahul/dl-and-genai"
           target="_blank"
