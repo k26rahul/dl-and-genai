@@ -22,7 +22,7 @@ export default function FunctionSelector({
           </span>
         </div>
         <div className='flex items-start gap-1.5 md:gap-2 min-w-0 border-t border-slate-200 pt-1'>
-          <span className='font-bold text-violet-500 font-mono text-xs md:text-sm shrink-0'>
+          <span className='font-bold text-violet-600 font-mono text-xs md:text-sm shrink-0'>
             <TeX math='\nabla f(\mathbf{X})' />
           </span>
           <span className='text-slate-500 shrink-0 text-xs mt-0.5'>=</span>

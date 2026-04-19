@@ -15,8 +15,8 @@ export default function DescentControls({
     <div className='order-4 lg:order-none p-2 md:p-3 bg-violet-50 border border-violet-100 rounded-lg md:rounded-xl shadow-sm flex flex-col gap-2'>
       <div className='flex flex-col sm:flex-row gap-2 items-end'>
         <div className='flex-1 w-full'>
-          <label className='block text-[10px] md:text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1'>
-            Learning Rate <TeX math='\eta' />
+          <label className='block text-[10px] md:text-xs font-semibold text-slate-600 tracking-wide mb-1'>
+            <span className='uppercase'>Learning Rate</span> <span className='normal-case inline-block'><TeX math='\eta' /></span>
           </label>
           <select
             className='w-full bg-white border border-violet-200 text-violet-900 text-xs md:text-sm rounded-lg p-1.5 md:p-2 shadow-sm font-mono focus:ring-violet-500 focus:border-violet-500'

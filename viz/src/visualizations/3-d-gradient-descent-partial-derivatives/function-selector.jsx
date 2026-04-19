@@ -18,12 +18,12 @@ export default function FunctionSelector({
           </span>
         </div>
         <div className='flex items-start gap-1.5 min-w-0 border-t border-slate-200 pt-1'>
-          <span className='font-bold text-violet-500 text-xs md:text-sm shrink-0'>
+          <span className='font-bold text-violet-600 text-xs md:text-sm shrink-0'>
             <TeX math={currentFunc.dxLatex} />
           </span>
         </div>
         <div className='flex items-start gap-1.5 min-w-0 border-t border-slate-200 pt-1'>
-          <span className='font-bold text-violet-400 text-xs md:text-sm shrink-0'>
+          <span className='font-bold text-violet-600 text-xs md:text-sm shrink-0'>
             <TeX math={currentFunc.dyLatex} />
           </span>
         </div>

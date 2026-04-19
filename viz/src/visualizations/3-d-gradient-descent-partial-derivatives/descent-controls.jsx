@@ -24,8 +24,8 @@ export default function DescentControls({
       {/* LR Select + Buttons */}
       <div className='flex flex-col sm:flex-row gap-2 items-end'>
         <div className='flex-1 w-full'>
-          <label className='block text-[10px] md:text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1'>
-            Learning Rate <TeX math='\eta' />
+          <label className='block text-[10px] md:text-xs font-semibold text-slate-600 tracking-wide mb-1'>
+            <span className='uppercase'>Learning Rate</span> <span className='normal-case inline-block'><TeX math='\eta' /></span>
           </label>
           <select
             className='w-full bg-white border border-violet-200 text-violet-900 text-xs md:text-sm rounded-lg p-1.5 md:p-2 shadow-sm font-mono focus:ring-violet-500 focus:border-violet-500'
@@ -89,7 +89,7 @@ export default function DescentControls({
         <div className='font-mono text-[10px] md:text-[13px] text-slate-700 flex flex-col gap-0.5 md:gap-1'>
           {/* X row */}
           <div className='flex flex-wrap items-center gap-x-1'>
-            <span>x<sub>new</sub> =</span>
+            <span className='flex items-center text-slate-600'><TeX math='x_{new} =' /></span>
             <span className='font-semibold text-rose-600'>{x.toFixed(4)}</span>
             <span>- (</span>
             <span className='font-semibold text-violet-500'>{learningRate}</span>
@@ -106,7 +106,7 @@ export default function DescentControls({
 
           {/* Y row */}
           <div className='flex flex-wrap items-center gap-x-1'>
-            <span>y<sub>new</sub> =</span>
+            <span className='flex items-center text-slate-600'><TeX math='y_{new} =' /></span>
             <span className='font-semibold text-sky-600'>{y.toFixed(4)}</span>
             <span>- (</span>
             <span className='font-semibold text-violet-500'>{learningRate}</span>

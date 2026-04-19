@@ -6,10 +6,10 @@ export default function StatusPanel({ x, y, m, derivativeColor, arrowWidth }) {
   const arrowDir = m < 0 ? '←' : m > 0 ? '→' : '•';
   const arrowLabel =
     Math.abs(m) < 0.01
-      ? 'Flat (at minimum)'
+      ? 'Flat'
       : m > 0
-        ? 'Slope up → Step Left'
-        : 'Slope down → Step Right';
+        ? 'Slope up • Step Left'
+        : 'Slope down • Step Right';
 
   return (
     <div className='order-2 lg:order-none bg-white p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-200'>
@@ -39,8 +39,8 @@ export default function StatusPanel({ x, y, m, derivativeColor, arrowWidth }) {
 
       {/* Derivative readout */}
       <div className='bg-slate-100 border border-slate-200 rounded-lg p-2 md:p-3 mb-2 md:mb-3'>
-        <div className='text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1'>
-          Derivative <TeX math="f'(x)" />
+        <div className='text-[9px] md:text-[10px] font-bold text-slate-500 tracking-wide mb-1 flex items-center'>
+          <span className='uppercase'>Derivative</span> <span className='normal-case inline-block ml-1.5 text-xs md:text-sm'><TeX math='\dfrac{dy}{dx}' /></span>
         </div>
         <div
           className='font-mono text-xl md:text-3xl font-bold text-center py-1'
@@ -48,8 +48,18 @@ export default function StatusPanel({ x, y, m, derivativeColor, arrowWidth }) {
         >
           {m.toFixed(4)}
         </div>
-        <div className='text-[9px] md:text-xs text-center text-slate-500 mt-0.5'>
-          {m > 0 ? '↑ Increasing' : m < 0 ? '↓ Decreasing' : '— Flat'}
+        <div className='text-[9px] md:text-xs text-center text-slate-500 mt-0.5 flex items-center justify-center gap-1'>
+          {m > 0 ? (
+            <>
+              ↑ <TeX math='y' /> Increasing
+            </>
+          ) : m < 0 ? (
+            <>
+              ↓ <TeX math='y' /> Decreasing
+            </>
+          ) : (
+            '— Flat'
+          )}
         </div>
       </div>
 

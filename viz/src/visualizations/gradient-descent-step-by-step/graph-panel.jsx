@@ -67,12 +67,12 @@ export default function GraphPanel({ currentFunc, x, setX, y, m, nextX, nextY })
             X
           </text>
           <text
-            x={mapX(0) - 5}
-            y={MARGIN - 10}
+            x={mapX(0)}
+            y={MARGIN - 15}
             fontSize='13'
             fill='#94a3b8'
             fontWeight='bold'
-            textAnchor='end'
+            textAnchor='middle'
           >
             Y
           </text>

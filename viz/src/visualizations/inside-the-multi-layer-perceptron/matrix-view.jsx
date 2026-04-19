@@ -3,8 +3,10 @@ import React from 'react';
 export default function MatrixView({ title, data }) {
   if (!data)
     return (
-      <div className='text-[10px] md:text-xs text-slate-400 italic p-1.5 md:p-2 border rounded border-slate-200 bg-slate-50'>
-        Waiting for {title}...
+      <div className='text-[10px] md:text-xs text-slate-400 italic p-1.5 md:p-2 border rounded border-slate-200 bg-slate-50 flex items-center flex-wrap gap-1'>
+        <span>Waiting for</span>
+        <span className='inline-flex items-center'>{title}</span>
+        <span>...</span>
       </div>
     );
   return (

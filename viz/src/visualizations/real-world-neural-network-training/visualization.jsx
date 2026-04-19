@@ -376,13 +376,13 @@ export default function Visualization() {
                 </span>
               </div>
             </div>
-            <div className='flex-1 w-full bg-slate-50 rounded-lg border border-slate-100 relative min-h-[130px]'>
+            <div className='flex-1 w-full bg-slate-50 rounded-lg border border-slate-100 relative h-[160px] lg:h-auto lg:min-h-[130px]'>
               {history.length === 0 ? (
                 <div className='absolute inset-0 flex items-center justify-center text-slate-400 text-xs'>
                   Awaiting Training...
                 </div>
               ) : (
-                <div className='w-full h-full p-2'>
+                <div className='absolute inset-0 p-2'>
                   <TrainingChart history={history} maxEpochs={maxEpochs} dsConfig={dsConfig} type='loss' />
                 </div>
               )}
@@ -404,13 +404,13 @@ export default function Visualization() {
                 </span>
               </div>
             </div>
-            <div className='flex-1 w-full bg-slate-50 rounded-lg border border-slate-100 relative min-h-[130px]'>
+            <div className='flex-1 w-full bg-slate-50 rounded-lg border border-slate-100 relative h-[160px] lg:h-auto lg:min-h-[130px]'>
               {history.length === 0 ? (
                 <div className='absolute inset-0 flex items-center justify-center text-slate-400 text-xs'>
                   Awaiting Training...
                 </div>
               ) : (
-                <div className='w-full h-full p-2'>
+                <div className='absolute inset-0 p-2'>
                   <TrainingChart history={history} maxEpochs={maxEpochs} dsConfig={dsConfig} type='metric' />
                 </div>
               )}

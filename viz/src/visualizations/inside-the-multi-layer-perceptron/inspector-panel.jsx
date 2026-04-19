@@ -1,4 +1,6 @@
 import React from 'react';
+import 'katex/dist/katex.min.css';
+import TeX from '@matejmazur/react-katex';
 import { updateParams } from './utils';
 import { X_DATA, Y_DATA } from './constants';
 import { MagnifierIcon } from './assets/icons';
@@ -6,10 +8,10 @@ import MatrixView from './matrix-view';
 
 const STAGES = [
   { id: 'input', name: 'Input', desc: 'Data', clickable: false, fwd: 'X', bwd: '' },
-  { id: 'layer1', name: 'Layer 1', desc: 'W1, b1', clickable: true, fwd: 'Z1', bwd: 'dZ1' },
-  { id: 'relu', name: 'Activ 1', desc: 'ReLU', clickable: true, fwd: 'A1', bwd: 'dA1' },
-  { id: 'layer2', name: 'Layer 2', desc: 'W2, b2', clickable: true, fwd: 'Z2', bwd: 'dZ2' },
-  { id: 'sigmoid', name: 'Activ 2', desc: 'Sigmoid', clickable: true, fwd: 'A2', bwd: 'dA2' },
+  { id: 'layer1', name: 'Layer 1', desc: <TeX math='W_1, b_1' />, clickable: true, fwd: 'Z_1', bwd: 'dZ_1' },
+  { id: 'relu', name: 'Activ 1', desc: 'ReLU', clickable: true, fwd: 'A_1', bwd: 'dA_1' },
+  { id: 'layer2', name: 'Layer 2', desc: <TeX math='W_2, b_2' />, clickable: true, fwd: 'Z_2', bwd: 'dZ_2' },
+  { id: 'sigmoid', name: 'Activ 2', desc: 'Sigmoid', clickable: true, fwd: 'A_2', bwd: 'dA_2' },
   { id: 'loss', name: 'Loss', desc: 'BCE', clickable: true },
 ];
 
@@ -65,12 +67,12 @@ export default function InspectorPanel({ snap, learningRate, isOpen, setIsOpen, 
 
                   {idx < arr.length - 1 && (
                     <div className='flex flex-col items-center justify-center px-1 min-w-[40px] md:min-w-[55px]'>
-                      <span className='text-[9px] md:text-[10px] font-bold text-blue-600 mb-[-2px] whitespace-nowrap'>
-                        {stage.fwd} &rarr;
+                      <span className='text-[9px] md:text-[10px] font-bold text-blue-600 mb-[-2px] whitespace-nowrap flex items-center gap-1'>
+                        <TeX math={stage.fwd} /> &rarr;
                       </span>
                       {stage.bwd ? (
-                        <span className='text-[9px] md:text-[10px] font-bold text-purple-600 mt-[-2px] whitespace-nowrap'>
-                          &larr; {stage.bwd}
+                        <span className='text-[9px] md:text-[10px] font-bold text-purple-600 mt-[-2px] whitespace-nowrap flex items-center gap-1'>
+                          &larr; <TeX math={stage.bwd} />
                         </span>
                       ) : (
                         <span className='text-[9px] md:text-[10px] font-bold text-slate-300 mt-[-2px]'>
@@ -92,40 +94,42 @@ export default function InspectorPanel({ snap, learningRate, isOpen, setIsOpen, 
                   <h4 className='font-bold text-sm md:text-base text-blue-700 mb-1 md:mb-2 border-b border-blue-200 pb-1'>
                     Forward Pass
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>Z1 = X @ W1 + b1</p>
-                  <MatrixView title='X (Input Data)' data={X_DATA} />
-                  <MatrixView title='W1 (Current Weights)' data={snap.W1} />
-                  <MatrixView title='b1 (Current Biases)' data={snap.b1} />
-                  <MatrixView title='Z1 (Output)' data={snap.Z1} />
+                  <p className='text-[10px] md:text-xs text-slate-500 mb-2'><TeX math='Z_1 = X W_1 + b_1' /></p>
+                  <MatrixView title={<><TeX math='X' /> (Input Data)</>} data={X_DATA} />
+                  <MatrixView title={<><TeX math='W_1' /> (Current Weights)</>} data={snap.W1} />
+                  <MatrixView title={<><TeX math='b_1' /> (Current Biases)</>} data={snap.b1} />
+                  <MatrixView title={<><TeX math='Z_1' /> (Output)</>} data={snap.Z1} />
                 </div>
                 <div>
                   <h4 className='font-bold text-sm md:text-base text-purple-700 mb-1 md:mb-2 border-b border-purple-200 pb-1'>
                     Backward Pass
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>
-                    dW1 = X.T @ dZ1<br />db1 = sum(dZ1, axis=0)
-                  </p>
-                  <MatrixView title='dZ1 (Incoming Grad)' data={snap.dZ1} />
-                  <MatrixView title='dW1 (Computed W1 Grad)' data={snap.dW1} />
-                  <MatrixView title='db1 (Computed b1 Grad)' data={snap.db1} />
+                  <div className='text-[10px] md:text-xs text-slate-500 mb-2 flex flex-col gap-1'>
+                    <TeX math='dW_1 = X^T dZ_1' />
+                    <TeX math='db_1 = \sum dZ_1' />
+                  </div>
+                  <MatrixView title={<><TeX math='dZ_1' /> (Incoming Grad)</>} data={snap.dZ1} />
+                  <MatrixView title={<><TeX math='dW_1' /> (Computed W1 Grad)</>} data={snap.dW1} />
+                  <MatrixView title={<><TeX math='db_1' /> (Computed b1 Grad)</>} data={snap.db1} />
                 </div>
                 <div>
                   <h4 className='font-bold text-sm md:text-base text-emerald-700 mb-1 md:mb-2 border-b border-emerald-200 pb-1'>
                     Parameter Update
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>
-                    W1_new = W1 - lr * dW1<br />b1_new = b1 - lr * db1
-                  </p>
+                  <div className='text-[10px] md:text-xs text-slate-500 mb-2 flex flex-col gap-1'>
+                    <TeX math='W_1 \leftarrow W_1 - \eta \cdot dW_1' />
+                    <TeX math='b_1 \leftarrow b_1 - \eta \cdot db_1' />
+                  </div>
                   <div className='bg-emerald-50 border border-emerald-200 rounded p-2 md:p-3 text-[10px] md:text-xs text-emerald-800 mb-3 leading-relaxed'>
                     The learning rate ({learningRate}) scales the gradient. We subtract this scaled
                     gradient from the current weights to step towards the minimum.
                   </div>
                   <MatrixView
-                    title='W1 (Next Epoch Weights)'
+                    title={<><TeX math='W_1' /> (Next Epoch Weights)</>}
                     data={snap.dW1 ? updateParams(snap.W1, snap.dW1, snap.b1, snap.db1, learningRate).newW : null}
                   />
                   <MatrixView
-                    title='b1 (Next Epoch Biases)'
+                    title={<><TeX math='b_1' /> (Next Epoch Biases)</>}
                     data={snap.db1 ? updateParams(snap.W1, snap.dW1, snap.b1, snap.db1, learningRate).newB : null}
                   />
                 </div>
@@ -138,20 +142,21 @@ export default function InspectorPanel({ snap, learningRate, isOpen, setIsOpen, 
                   <h4 className='font-bold text-sm md:text-base text-blue-700 mb-1 md:mb-2 border-b border-blue-200 pb-1'>
                     Forward Pass
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>A1 = max(0, Z1)</p>
-                  <MatrixView title='Z1 (Input from Layer 1)' data={snap.Z1} />
-                  <MatrixView title='A1 (Output activated)' data={snap.A1} />
+                  <p className='text-[10px] md:text-xs text-slate-500 mb-2'><TeX math='A_1 = \max(0, Z_1)' /></p>
+                  <MatrixView title={<><TeX math='Z_1' /> (Input from Layer 1)</>} data={snap.Z1} />
+                  <MatrixView title={<><TeX math='A_1' /> (Output activated)</>} data={snap.A1} />
                 </div>
                 <div className='md:col-span-2'>
                   <h4 className='font-bold text-sm md:text-base text-purple-700 mb-1 md:mb-2 border-b border-purple-200 pb-1'>
                     Backward Pass (Chain Rule)
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>
-                    Local = (Z1 &gt; 0)<br />dZ1 = dA1 * Local
-                  </p>
+                  <div className='text-[10px] md:text-xs text-slate-500 mb-2 flex flex-col gap-1'>
+                    <TeX math='\text{Local} = (Z_1 > 0)' />
+                    <TeX math='dZ_1 = dA_1 \odot \text{Local}' />
+                  </div>
                   <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-4'>
-                    <MatrixView title='dA1 (Incoming Grad)' data={snap.dA1} />
-                    <MatrixView title='dZ1 (Grad passed back)' data={snap.dZ1} />
+                    <MatrixView title={<><TeX math='dA_1' /> (Incoming Grad)</>} data={snap.dA1} />
+                    <MatrixView title={<><TeX math='dZ_1' /> (Grad passed back)</>} data={snap.dZ1} />
                   </div>
                   <p className='text-[10px] md:text-xs text-slate-600 mt-2 bg-purple-50 p-2 md:p-3 rounded leading-relaxed'>
                     <strong>Note:</strong> ReLU simply acts as a gate. If the original forward Z1
@@ -168,37 +173,39 @@ export default function InspectorPanel({ snap, learningRate, isOpen, setIsOpen, 
                   <h4 className='font-bold text-sm md:text-base text-blue-700 mb-1 md:mb-2 border-b border-blue-200 pb-1'>
                     Forward Pass
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>Z2 = A1 @ W2 + b2</p>
-                  <MatrixView title='A1 (Input from ReLU)' data={snap.A1} />
-                  <MatrixView title='W2 (Current Weights)' data={snap.W2} />
-                  <MatrixView title='b2 (Current Biases)' data={snap.b2} />
-                  <MatrixView title='Z2 (Output)' data={snap.Z2} />
+                  <p className='text-[10px] md:text-xs text-slate-500 mb-2'><TeX math='Z_2 = A_1 W_2 + b_2' /></p>
+                  <MatrixView title={<><TeX math='A_1' /> (Input from ReLU)</>} data={snap.A1} />
+                  <MatrixView title={<><TeX math='W_2' /> (Current Weights)</>} data={snap.W2} />
+                  <MatrixView title={<><TeX math='b_2' /> (Current Biases)</>} data={snap.b2} />
+                  <MatrixView title={<><TeX math='Z_2' /> (Output)</>} data={snap.Z2} />
                 </div>
                 <div>
                   <h4 className='font-bold text-sm md:text-base text-purple-700 mb-1 md:mb-2 border-b border-purple-200 pb-1'>
                     Backward Pass
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>
-                    dW2 = A1.T @ dZ2<br />db2 = sum(dZ2, axis=0)
-                  </p>
-                  <MatrixView title='dZ2 (Incoming Grad)' data={snap.dZ2} />
-                  <MatrixView title='dW2 (Computed W2 Grad)' data={snap.dW2} />
-                  <MatrixView title='db2 (Computed b2 Grad)' data={snap.db2} />
-                  <MatrixView title='dA1 (Grad passed back)' data={snap.dA1} />
+                  <div className='text-[10px] md:text-xs text-slate-500 mb-2 flex flex-col gap-1'>
+                    <TeX math='dW_2 = A_1^T dZ_2' />
+                    <TeX math='db_2 = \sum dZ_2' />
+                  </div>
+                  <MatrixView title={<><TeX math='dZ_2' /> (Incoming Grad)</>} data={snap.dZ2} />
+                  <MatrixView title={<><TeX math='dW_2' /> (Computed W2 Grad)</>} data={snap.dW2} />
+                  <MatrixView title={<><TeX math='db_2' /> (Computed b2 Grad)</>} data={snap.db2} />
+                  <MatrixView title={<><TeX math='dA_1' /> (Grad passed back)</>} data={snap.dA1} />
                 </div>
                 <div>
                   <h4 className='font-bold text-sm md:text-base text-emerald-700 mb-1 md:mb-2 border-b border-emerald-200 pb-1'>
                     Parameter Update
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>
-                    W2_new = W2 - lr * dW2<br />b2_new = b2 - lr * db2
-                  </p>
+                  <div className='text-[10px] md:text-xs text-slate-500 mb-2 flex flex-col gap-1'>
+                    <TeX math='W_2 \leftarrow W_2 - \eta \cdot dW_2' />
+                    <TeX math='b_2 \leftarrow b_2 - \eta \cdot db_2' />
+                  </div>
                   <MatrixView
-                    title='W2 (Next Epoch Weights)'
+                    title={<><TeX math='W_2' /> (Next Epoch Weights)</>}
                     data={snap.dW2 ? updateParams(snap.W2, snap.dW2, snap.b2, snap.db2, learningRate).newW : null}
                   />
                   <MatrixView
-                    title='b2 (Next Epoch Biases)'
+                    title={<><TeX math='b_2' /> (Next Epoch Biases)</>}
                     data={snap.db2 ? updateParams(snap.W2, snap.dW2, snap.b2, snap.db2, learningRate).newB : null}
                   />
                 </div>
@@ -211,22 +218,23 @@ export default function InspectorPanel({ snap, learningRate, isOpen, setIsOpen, 
                   <h4 className='font-bold text-sm md:text-base text-blue-700 mb-1 md:mb-2 border-b border-blue-200 pb-1'>
                     Forward Pass
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>
-                    A2 = 1 / (1 + e^-Z2)
+                  <p className='text-[10px] md:text-xs text-slate-500 mb-2'>
+                    <TeX math='A_2 = \sigma(Z_2) = \frac{1}{1 + e^{-Z_2}}' />
                   </p>
-                  <MatrixView title='Z2 (Raw logit Layer 2)' data={snap.Z2} />
-                  <MatrixView title='A2 (Final Probability)' data={snap.A2} />
+                  <MatrixView title={<><TeX math='Z_2' /> (Raw logit Layer 2)</>} data={snap.Z2} />
+                  <MatrixView title={<><TeX math='A_2' /> (Final Probability)</>} data={snap.A2} />
                 </div>
                 <div className='md:col-span-2'>
                   <h4 className='font-bold text-sm md:text-base text-purple-700 mb-1 md:mb-2 border-b border-purple-200 pb-1'>
                     Backward Pass (Chain Rule)
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>
-                    Local = A2 * (1 - A2)<br />dZ2 = dA2 * Local
-                  </p>
+                  <div className='text-[10px] md:text-xs text-slate-500 mb-2 flex flex-col gap-1'>
+                    <TeX math='\text{Local} = A_2 \odot (1 - A_2)' />
+                    <TeX math='dZ_2 = dA_2 \odot \text{Local}' />
+                  </div>
                   <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-4'>
-                    <MatrixView title='dA2 (Incoming Grad from Loss)' data={snap.dA2} />
-                    <MatrixView title='dZ2 (Grad passed back)' data={snap.dZ2} />
+                    <MatrixView title={<><TeX math='dA_2' /> (Incoming Grad from Loss)</>} data={snap.dA2} />
+                    <MatrixView title={<><TeX math='dZ_2' /> (Grad passed back)</>} data={snap.dZ2} />
                   </div>
                   <p className='text-[10px] md:text-xs text-slate-600 mt-2 bg-purple-50 p-2 md:p-3 rounded leading-relaxed'>
                     <strong>Note:</strong> The local gradient of Sigmoid is maximum at 0.5 and decays
@@ -243,11 +251,11 @@ export default function InspectorPanel({ snap, learningRate, isOpen, setIsOpen, 
                   <h4 className='font-bold text-sm md:text-base text-blue-700 mb-1 md:mb-2 border-b border-blue-200 pb-1'>
                     Forward (Evaluation)
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>
-                    Loss = BCE(A2, Y)
-                  </p>
-                  <MatrixView title='A2 (Predictions)' data={snap.A2} />
-                  <MatrixView title='Y (True Labels)' data={Y_DATA.map(y => [y])} />
+                  <div className='text-[10px] md:text-xs text-slate-500 mb-2 flex flex-col gap-1'>
+                    <TeX math='\mathcal{L} = \text{BCE}(A_2, Y)' />
+                  </div>
+                  <MatrixView title={<><TeX math='A_2' /> (Predictions)</>} data={snap.A2} />
+                  <MatrixView title={<><TeX math='Y' /> (True Labels)</>} data={Y_DATA.map(y => [y])} />
                   <div className='bg-red-50 text-red-700 p-2 md:p-3 rounded font-bold border border-red-200 flex justify-between items-center mt-2'>
                     <span className='text-xs md:text-sm'>Mean BCE Loss:</span>
                     <span className='font-mono text-base md:text-xl'>
@@ -259,11 +267,11 @@ export default function InspectorPanel({ snap, learningRate, isOpen, setIsOpen, 
                   <h4 className='font-bold text-sm md:text-base text-purple-700 mb-1 md:mb-2 border-b border-purple-200 pb-1'>
                     Backward (Starting Chain)
                   </h4>
-                  <p className='text-[10px] md:text-xs text-slate-500 font-mono mb-2'>
-                    dA2 = (-Y/A2 + (1-Y)/(1-A2)) / n
-                  </p>
+                  <div className='text-[10px] md:text-xs text-slate-500 mb-2 flex flex-col gap-1'>
+                    <TeX math='dA_2 = \frac{1}{n} \left( -\frac{Y}{A_2} + \frac{1-Y}{1-A_2} \right)' />
+                  </div>
                   <div className='w-full sm:w-1/2'>
-                    <MatrixView title='dA2 (Initial Grad sent back)' data={snap.dA2} />
+                    <MatrixView title={<><TeX math='dA_2' /> (Initial Grad sent back)</>} data={snap.dA2} />
                   </div>
                   <p className='text-[10px] md:text-xs text-slate-600 mt-2 bg-purple-50 p-2 md:p-3 rounded leading-relaxed'>
                     <strong>Note:</strong> This is the very beginning of Backpropagation. The Loss

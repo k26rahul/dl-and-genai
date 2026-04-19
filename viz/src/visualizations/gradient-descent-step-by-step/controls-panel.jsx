@@ -23,8 +23,8 @@ export default function ControlsPanel({
       {/* LR + Step button row */}
       <div className='flex items-center gap-2 md:gap-3 mb-2 md:mb-3'>
         <div className='flex-1'>
-          <label className='block text-[10px] md:text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1'>
-            Learning Rate <TeX math='\eta' />
+          <label className='block text-[10px] md:text-xs font-semibold text-slate-600 tracking-wide mb-1'>
+            <span className='uppercase'>Learning Rate</span> <span className='normal-case inline-block'><TeX math='\eta' /></span>
           </label>
           <select
             value={learningRate}
@@ -64,8 +64,8 @@ export default function ControlsPanel({
 
           {/* Value row */}
           <div className='flex flex-wrap items-center gap-x-1 md:gap-x-1.5'>
-            <span>
-              x<sub>new</sub> =
+            <span className='flex items-center mt-1 mr-1 text-slate-600'>
+              <TeX math='x_{new} =' />
             </span>
             <span className='font-semibold text-violet-700'>{x.toFixed(4)}</span>
             <span>- (</span>
@@ -79,8 +79,8 @@ export default function ControlsPanel({
 
           {/* Result row */}
           <div className='flex flex-wrap items-center gap-x-1 md:gap-x-1.5 text-sm md:text-base mt-0.5 md:mt-1'>
-            <span>
-              x<sub>new</sub> =
+            <span className='flex items-center mt-0.5 mr-1 text-slate-600'>
+              <TeX math='x_{new} =' />
             </span>
             <span className='font-bold text-rose-500'>{nextX.toFixed(4)}</span>
             {Math.abs(nextX - rawNextX) > 0.0001 && (
