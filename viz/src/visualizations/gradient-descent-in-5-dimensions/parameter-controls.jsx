@@ -6,9 +6,9 @@ export default function ParameterControls({ params, grads, currentFunc, handleMa
   return (
     <div className='order-2 lg:order-none bg-slate-800 p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-700'>
       <div className='border-b border-slate-600 pb-1.5 mb-2'>
-        <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest'>
-          Parameter Space (
-          <TeX math='x_1' /> – <TeX math='x_5' />)
+        <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1'>
+          <span>Parameter Space</span>
+          <span className='normal-case'>(<TeX math='x_1' /> – <TeX math='x_5' />)</span>
         </h2>
       </div>
 
