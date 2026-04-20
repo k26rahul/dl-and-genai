@@ -37,7 +37,7 @@ function LayerRow({ layerKey, label, inSize, outSize, bgClass, borderClass, text
 export default function ArchitecturePanel({ rawData, dataLoaded, depth, neurons, dsConfig, batchSize, totalRows }) {
   if (!dataLoaded || !rawData) {
     return (
-      <div className='bg-white p-3 md:p-4 rounded-lg md:rounded-xl shadow-sm border border-slate-200'>
+      <div className='bg-slate-800 p-3 md:p-4 rounded-lg md:rounded-xl shadow-sm border border-slate-700'>
         <div className='text-xs text-slate-400 italic py-2'>Loading configuration...</div>
       </div>
     );
@@ -57,20 +57,20 @@ export default function ArchitecturePanel({ rawData, dataLoaded, depth, neurons,
   });
 
   return (
-    <div className='bg-white p-3 md:p-4 rounded-lg md:rounded-xl shadow-sm border border-slate-200'>
-      <div className='flex justify-between items-center border-b border-slate-100 pb-2 mb-2'>
-        <h2 className='text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest'>
+    <div className='bg-slate-800 p-3 md:p-4 rounded-lg md:rounded-xl shadow-sm border border-slate-700'>
+      <div className='flex justify-between items-center border-b border-slate-600 pb-2 mb-2'>
+        <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest'>
           Network Architecture
         </h2>
-        <span className='text-[10px] font-bold bg-slate-800 text-white px-2 py-0.5 rounded-full font-mono'>
+        <span className='text-[10px] font-bold bg-slate-700 text-white px-2 py-0.5 rounded-full font-mono border border-slate-600'>
           {totalParams.toLocaleString()} params
         </span>
       </div>
 
       <div className='flex flex-col gap-1.5'>
-        <div className='flex justify-between text-[10px] md:text-xs bg-slate-50 p-1.5 rounded border border-slate-100'>
-          <span className='font-bold text-slate-500'>Features (Input):</span>
-          <span className='font-mono text-slate-700'>{numFeatures} — shape ({parsedBatch}, {numFeatures})</span>
+        <div className='flex justify-between text-[10px] md:text-xs bg-slate-700 p-1.5 rounded border border-slate-600'>
+          <span className='font-bold text-slate-400'>Features (Input):</span>
+          <span className='font-mono text-slate-200'>{numFeatures} — shape ({parsedBatch}, {numFeatures})</span>
         </div>
 
         {[...Array(depth)].map((_, i) => (
@@ -81,10 +81,10 @@ export default function ArchitecturePanel({ rawData, dataLoaded, depth, neurons,
             inSize={inputSizes[i]}
             outSize={layerSizes[i]}
             parsedBatch={parsedBatch}
-            bgClass='bg-violet-50'
-            borderClass='border-violet-100'
-            textClass='text-violet-800'
-            badgeClass='bg-violet-200 text-violet-900'
+            bgClass='bg-violet-900/20'
+            borderClass='border-violet-700'
+            textClass='text-violet-200'
+            badgeClass='bg-violet-800 text-violet-100'
           />
         ))}
 
@@ -94,10 +94,10 @@ export default function ArchitecturePanel({ rawData, dataLoaded, depth, neurons,
           inSize={inputSizes[depth]}
           outSize={dsConfig.outNeurons}
           parsedBatch={parsedBatch}
-          bgClass='bg-purple-50'
-          borderClass='border-purple-100'
-          textClass='text-purple-800'
-          badgeClass='bg-purple-200 text-purple-900'
+          bgClass='bg-purple-900/20'
+          borderClass='border-purple-700'
+          textClass='text-purple-200'
+          badgeClass='bg-purple-800 text-purple-100'
         />
       </div>
     </div>

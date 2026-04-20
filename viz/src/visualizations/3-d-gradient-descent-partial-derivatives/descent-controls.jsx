@@ -20,15 +20,15 @@ export default function DescentControls({
   colorY,
 }) {
   return (
-    <div className='order-4 lg:order-none p-2 md:p-3 bg-violet-50 border border-violet-100 rounded-lg md:rounded-xl shadow-sm flex flex-col gap-2'>
+    <div className='order-4 lg:order-none p-2 md:p-3 bg-violet-900/20 border border-violet-700 rounded-lg md:rounded-xl shadow-sm flex flex-col gap-2'>
       {/* LR Select + Buttons */}
       <div className='flex flex-col sm:flex-row gap-2 items-end'>
         <div className='flex-1 w-full'>
-          <label className='block text-[10px] md:text-xs font-semibold text-slate-600 tracking-wide mb-1'>
+          <label className='block text-[10px] md:text-xs font-semibold text-slate-300 tracking-wide mb-1'>
             <span className='uppercase'>Learning Rate</span> <span className='normal-case inline-block'><TeX math='\eta' /></span>
           </label>
           <select
-            className='w-full bg-white border border-violet-200 text-violet-900 text-xs md:text-sm rounded-lg p-1.5 md:p-2 shadow-sm font-mono focus:ring-violet-500 focus:border-violet-500'
+            className='w-full bg-slate-700 border border-violet-600 text-violet-200 text-xs md:text-sm rounded-lg p-1.5 md:p-2 shadow-sm font-mono focus:ring-violet-500 focus:border-violet-500'
             value={learningRate}
             onChange={e => setLearningRate(Number(e.target.value))}
           >
@@ -51,7 +51,7 @@ export default function DescentControls({
             disabled={playMode !== 0}
             className={`flex-1 sm:flex-none text-white font-bold py-1.5 px-3 md:py-2 md:px-4 text-xs md:text-sm rounded-lg transition-colors shadow-sm flex items-center justify-center gap-1 ${
               playMode !== 0
-                ? 'bg-violet-300 cursor-not-allowed'
+                ? 'bg-violet-800 cursor-not-allowed'
                 : 'bg-violet-600 hover:bg-violet-700 active:bg-violet-800'
             }`}
           >
@@ -81,18 +81,18 @@ export default function DescentControls({
       </div>
 
       {/* Computation Display */}
-      <div className='bg-white p-2 md:p-3 rounded-lg border border-violet-200 shadow-inner'>
-        <div className='text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 md:mb-2'>
+      <div className='bg-slate-800 p-2 md:p-3 rounded-lg border border-slate-600 shadow-inner'>
+        <div className='text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 md:mb-2'>
           Partial Computations
         </div>
 
-        <div className='font-mono text-[10px] md:text-[13px] text-slate-700 flex flex-col gap-0.5 md:gap-1'>
+        <div className='font-mono text-[10px] md:text-[13px] text-slate-300 flex flex-col gap-0.5 md:gap-1'>
           {/* X row */}
           <div className='flex flex-wrap items-center gap-x-1'>
-            <span className='flex items-center text-slate-600'><TeX math='x_{new} =' /></span>
-            <span className='font-semibold text-rose-600'>{x.toFixed(4)}</span>
+            <span className='flex items-center text-slate-400'><TeX math='x_{new} =' /></span>
+            <span className='font-semibold text-rose-400'>{x.toFixed(4)}</span>
             <span>- (</span>
-            <span className='font-semibold text-violet-500'>{learningRate}</span>
+            <span className='font-semibold text-violet-400'>{learningRate}</span>
             <span>×</span>
             <span className='font-semibold' style={{ color: colorX }}>
               {mX < 0 ? `(${mX.toFixed(4)})` : mX.toFixed(4)}
@@ -102,14 +102,14 @@ export default function DescentControls({
             <span className='font-bold text-rose-500'>{nextX.toFixed(4)}</span>
           </div>
 
-          <div className='w-full h-px bg-slate-100 my-0.5' />
+          <div className='w-full h-px bg-slate-600 my-0.5' />
 
           {/* Y row */}
           <div className='flex flex-wrap items-center gap-x-1'>
-            <span className='flex items-center text-slate-600'><TeX math='y_{new} =' /></span>
-            <span className='font-semibold text-sky-600'>{y.toFixed(4)}</span>
+            <span className='flex items-center text-slate-400'><TeX math='y_{new} =' /></span>
+            <span className='font-semibold text-sky-400'>{y.toFixed(4)}</span>
             <span>- (</span>
-            <span className='font-semibold text-violet-500'>{learningRate}</span>
+            <span className='font-semibold text-violet-400'>{learningRate}</span>
             <span>×</span>
             <span className='font-semibold' style={{ color: colorY }}>
               {mY < 0 ? `(${mY.toFixed(4)})` : mY.toFixed(4)}

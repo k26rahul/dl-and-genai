@@ -5,10 +5,10 @@ import { TableIcon } from './assets/icons';
 
 export default function PredictionsTable({ snap, isTableOpen, setIsTableOpen }) {
   return (
-    <div className='bg-white rounded-lg md:rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden h-fit'>
+    <div className='bg-slate-800 rounded-lg md:rounded-xl shadow-sm border border-slate-700 flex flex-col overflow-hidden h-fit'>
       {/* Header - Clickable */}
       <div
-        className='bg-slate-800 p-2.5 md:p-4 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition-colors'
+        className='bg-slate-800 p-2.5 md:p-4 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition-colors border-b border-slate-700'
         onClick={() => setIsTableOpen(!isTableOpen)}
       >
         <h2 className='text-sm md:text-base font-bold text-white flex items-center gap-2'>
@@ -23,11 +23,11 @@ export default function PredictionsTable({ snap, isTableOpen, setIsTableOpen }) 
       {isTableOpen && (
         <div className='p-2 md:p-3 overflow-x-auto custom-scrollbar max-h-64 lg:max-h-96 overflow-y-auto'>
           <table className='w-full text-[10px] md:text-sm text-left min-w-[300px]'>
-            <thead className='text-[9px] md:text-[10px] text-slate-500 bg-slate-50 uppercase border-b border-slate-200'>
+            <thead className='text-[9px] md:text-[10px] text-slate-400 bg-slate-700 uppercase border-b border-slate-600'>
               <tr>
                 <th className='px-2 py-1.5 md:px-3 md:py-2'>ID</th>
                 <th className='px-2 py-1.5 md:px-3 md:py-2'>Inputs (X)</th>
-                <th className='px-2 py-1.5 md:px-3 md:py-2 text-center text-violet-700 font-bold'>
+                <th className='px-2 py-1.5 md:px-3 md:py-2 text-center text-violet-400 font-bold'>
                   Pred (A2)
                 </th>
                 <th className='px-2 py-1.5 md:px-3 md:py-2 text-center'>True (Y)</th>
@@ -50,23 +50,23 @@ export default function PredictionsTable({ snap, isTableOpen, setIsTableOpen }) 
                 const rowColor =
                   snap.epoch > 0 && pred !== null
                     ? isCorrect
-                      ? 'bg-emerald-50/50'
-                      : 'bg-red-50/50'
+                      ? 'bg-emerald-900/20'
+                      : 'bg-red-900/20'
                     : '';
 
                 return (
                   <tr
                     key={i}
-                    className={`border-b border-slate-100 font-mono text-[10px] md:text-[13px] ${rowColor}`}
+                    className={`border-b border-slate-700 font-mono text-[10px] md:text-[13px] ${rowColor}`}
                   >
-                    <td className='px-2 py-1.5 md:px-3 md:py-2 text-slate-400'>#{i}</td>
-                    <td className='px-2 py-1.5 md:px-3 md:py-2 text-slate-600 truncate'>
+                    <td className='px-2 py-1.5 md:px-3 md:py-2 text-slate-500'>#{i}</td>
+                    <td className='px-2 py-1.5 md:px-3 md:py-2 text-slate-300 truncate'>
                       [{x.map(v => v.toFixed(1)).join(', ')}]
                     </td>
-                    <td className='px-2 py-1.5 md:px-3 md:py-2 text-center font-bold text-violet-600'>
+                    <td className='px-2 py-1.5 md:px-3 md:py-2 text-center font-bold text-violet-400'>
                       {pred === null ? '---' : pred.toFixed(4)}
                     </td>
-                    <td className='px-2 py-1.5 md:px-3 md:py-2 text-center font-bold text-slate-800'>
+                    <td className='px-2 py-1.5 md:px-3 md:py-2 text-center font-bold text-slate-200'>
                       {trueY}
                     </td>
                     <td className='px-2 py-1.5 md:px-3 md:py-2 text-right text-red-500'>

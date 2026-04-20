@@ -321,8 +321,8 @@ export default function Visualization() {
 
   if (!metaInfo || !dsConfig) {
     return (
-      <div className='flex flex-col items-center justify-center gap-3 text-slate-500 py-20'>
-        <div className='w-8 h-8 border-2 border-violet-300 border-t-violet-600 rounded-full animate-spin' />
+      <div className='flex flex-col items-center justify-center gap-3 text-slate-400 py-20'>
+        <div className='w-8 h-8 border-2 border-violet-800 border-t-violet-400 rounded-full animate-spin' />
         <p className='text-sm font-medium'>Loading datasets…</p>
       </div>
     );
@@ -358,9 +358,9 @@ export default function Visualization() {
         {/* LEFT: Charts */}
         <div className='order-1 lg:col-span-5 flex flex-col gap-2 md:gap-3 lg:gap-4'>
           {/* Loss Chart */}
-          <div className='bg-white p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-200 flex-1 min-h-[200px] flex flex-col'>
+          <div className='bg-slate-800 p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-700 flex-1 min-h-[200px] flex flex-col'>
             <div className='flex justify-between items-center mb-2'>
-              <h2 className='text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest'>
+              <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest'>
                 Loss Curve ({
                   dsConfig.loss === 'binaryCrossentropy' ? 'Binary Cross-Entropy' :
                   dsConfig.loss === 'categoricalCrossentropy' ? 'Categorical Cross-Entropy' :
@@ -368,17 +368,17 @@ export default function Visualization() {
                 })
               </h2>
               <div className='flex gap-2 text-[9px] md:text-[10px] font-bold'>
-                <span className='flex items-center gap-1 text-blue-600'>
+                <span className='flex items-center gap-1 text-blue-400'>
                   <div className='w-2 h-2 rounded-full bg-blue-500' /> Train {latestMetric ? `(${latestMetric.trainLoss.toFixed(3)})` : ''}
                 </span>
-                <span className='flex items-center gap-1 text-orange-500'>
+                <span className='flex items-center gap-1 text-orange-400'>
                   <div className='w-2 h-2 rounded-full bg-orange-400' /> Test {latestMetric ? `(${latestMetric.testLoss.toFixed(3)})` : ''}
                 </span>
               </div>
             </div>
-            <div className='flex-1 w-full bg-slate-50 rounded-lg border border-slate-100 relative h-[160px] lg:h-auto lg:min-h-[130px]'>
+            <div className='flex-1 w-full bg-slate-900 rounded-lg border border-slate-700 relative h-[160px] lg:h-auto lg:min-h-[130px]'>
               {history.length === 0 ? (
-                <div className='absolute inset-0 flex items-center justify-center text-slate-400 text-xs'>
+                <div className='absolute inset-0 flex items-center justify-center text-slate-500 text-xs'>
                   Awaiting Training...
                 </div>
               ) : (
@@ -390,23 +390,23 @@ export default function Visualization() {
           </div>
 
           {/* Metric Chart */}
-          <div className='bg-white p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-200 flex-1 min-h-[200px] flex flex-col'>
+          <div className='bg-slate-800 p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-700 flex-1 min-h-[200px] flex flex-col'>
             <div className='flex justify-between items-center mb-2'>
-              <h2 className='text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest'>
+              <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest'>
                 Performance ({dsConfig.type === 'classification' ? 'Accuracy' : 'Mean Abs Error'})
               </h2>
               <div className='flex gap-2 text-[9px] md:text-[10px] font-bold'>
-                <span className='flex items-center gap-1 text-emerald-600'>
+                <span className='flex items-center gap-1 text-emerald-400'>
                   <div className='w-2 h-2 rounded-full bg-emerald-500' /> Train {latestMetric ? `(${latestMetric.trainMetric.toFixed(3)})` : ''}
                 </span>
-                <span className='flex items-center gap-1 text-red-500'>
+                <span className='flex items-center gap-1 text-red-400'>
                   <div className='w-2 h-2 rounded-full bg-red-500' /> Test {latestMetric ? `(${latestMetric.testMetric.toFixed(3)})` : ''}
                 </span>
               </div>
             </div>
-            <div className='flex-1 w-full bg-slate-50 rounded-lg border border-slate-100 relative h-[160px] lg:h-auto lg:min-h-[130px]'>
+            <div className='flex-1 w-full bg-slate-900 rounded-lg border border-slate-700 relative h-[160px] lg:h-auto lg:min-h-[130px]'>
               {history.length === 0 ? (
-                <div className='absolute inset-0 flex items-center justify-center text-slate-400 text-xs'>
+                <div className='absolute inset-0 flex items-center justify-center text-slate-500 text-xs'>
                   Awaiting Training...
                 </div>
               ) : (
@@ -423,18 +423,18 @@ export default function Visualization() {
           {/* Hyperparams + Architecture side by side */}
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3'>
             {/* Hyperparameters */}
-            <div className='bg-violet-50 p-3 md:p-4 rounded-lg md:rounded-xl shadow-sm border border-violet-100'>
-              <h2 className='text-[10px] md:text-xs font-bold text-violet-500 uppercase tracking-widest border-b border-violet-200 pb-2 mb-3'>
+            <div className='bg-violet-900/20 p-3 md:p-4 rounded-lg md:rounded-xl shadow-sm border border-violet-700'>
+              <h2 className='text-[10px] md:text-xs font-bold text-violet-300 uppercase tracking-widest border-b border-violet-700 pb-2 mb-3'>
                 Hyperparameters
               </h2>
               <div className='space-y-2 md:space-y-3'>
                 <div className='flex justify-between items-center'>
-                  <label className='text-[11px] md:text-xs font-bold text-violet-800'>Batch Size</label>
+                  <label className='text-[11px] md:text-xs font-bold text-violet-200'>Batch Size</label>
                   <select
                     value={batchSize}
                     onChange={e => setBatchSize(e.target.value)}
                     disabled={isTraining}
-                    className='bg-white border border-violet-200 rounded px-2 py-1 text-xs font-mono shadow-sm w-28'
+                    className='bg-slate-700 border border-violet-600 text-slate-200 rounded px-2 py-1 text-xs font-mono shadow-sm w-28'
                   >
                     <option value='1'>1 (SGD)</option>
                     <option value='8'>8</option>
@@ -448,11 +448,11 @@ export default function Visualization() {
                 </div>
 
                 <div className='flex justify-between items-center'>
-                  <label className='text-[11px] md:text-xs font-bold text-violet-800'>Anim Throttle</label>
+                  <label className='text-[11px] md:text-xs font-bold text-violet-200'>Anim Throttle</label>
                   <select
                     value={throttle}
                     onChange={e => setThrottle(Number(e.target.value))}
-                    className='bg-white border border-violet-200 rounded px-2 py-1 text-xs font-mono shadow-sm w-28'
+                    className='bg-slate-700 border border-violet-600 text-slate-200 rounded px-2 py-1 text-xs font-mono shadow-sm w-28'
                   >
                     <option value={0}>Instant (0ms)</option>
                     <option value={10}>Fast (10ms)</option>
@@ -461,14 +461,14 @@ export default function Visualization() {
                   </select>
                 </div>
 
-                <div className='border-t border-violet-200 pt-2 space-y-2'>
+                <div className='border-t border-violet-700 pt-2 space-y-2'>
                   <div className='flex justify-between items-center'>
-                    <label className='text-[11px] md:text-xs font-bold text-violet-800'>LR Schedule</label>
+                    <label className='text-[11px] md:text-xs font-bold text-violet-200'>LR Schedule</label>
                     <select
                       value={lrSchedule}
                       onChange={e => setLrSchedule(e.target.value)}
                       disabled={isTraining}
-                      className='bg-white border border-violet-200 rounded px-2 py-1 text-xs font-mono shadow-sm w-28'
+                      className='bg-slate-700 border border-violet-600 text-slate-200 rounded px-2 py-1 text-xs font-mono shadow-sm w-28'
                     >
                       <option value='constant'>Constant</option>
                       <option value='step'>Step Decay</option>
@@ -477,12 +477,12 @@ export default function Visualization() {
                     </select>
                   </div>
                   <div className='flex justify-between items-center'>
-                    <label className='text-[11px] md:text-xs font-bold text-violet-800'>Base LR</label>
+                    <label className='text-[11px] md:text-xs font-bold text-violet-200'>Base LR</label>
                     <select
                       value={baseLr}
                       onChange={e => setBaseLr(Number(e.target.value))}
                       disabled={isTraining}
-                      className='bg-white border border-violet-200 rounded px-2 py-1 text-xs font-mono shadow-sm w-28'
+                      className='bg-slate-700 border border-violet-600 text-slate-200 rounded px-2 py-1 text-xs font-mono shadow-sm w-28'
                     >
                       {[0.01, 0.05, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0].map(lr => (
                         <option key={lr} value={lr}>{lr.toFixed(2)}</option>

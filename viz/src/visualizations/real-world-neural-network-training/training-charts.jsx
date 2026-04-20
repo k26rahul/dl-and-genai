@@ -29,25 +29,25 @@ export function TrainingChart({ history, maxEpochs, dsConfig, type }) {
   return (
     <ResponsiveContainer width='100%' height='100%'>
       <LineChart data={history} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray='3 3' stroke='#e2e8f0' vertical={false} />
+        <CartesianGrid strokeDasharray='3 3' stroke='#334155' vertical={false} />
         <XAxis
           dataKey='epoch'
           type='number'
           domain={[1, maxEpochs]}
-          tick={{ fontSize: 10, fill: '#94a3b8' }}
-          axisLine={{ stroke: '#e2e8f0' }}
+          tick={{ fontSize: 10, fill: '#64748b' }}
+          axisLine={{ stroke: '#334155' }}
           tickLine={false}
         />
         <YAxis
           domain={domain}
-          tick={{ fontSize: 10, fill: '#94a3b8' }}
-          axisLine={{ stroke: '#e2e8f0' }}
+          tick={{ fontSize: 10, fill: '#64748b' }}
+          axisLine={{ stroke: '#334155' }}
           tickLine={false}
           tickFormatter={val => val.toFixed(2)}
         />
         <Tooltip
-          contentStyle={{ fontSize: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-          labelStyle={{ fontWeight: 'bold', color: '#64748b', marginBottom: '4px' }}
+          contentStyle={{ fontSize: '12px', borderRadius: '8px', border: '1px solid #334155', background: '#1e293b', color: '#e2e8f0' }}
+          labelStyle={{ fontWeight: 'bold', color: '#94a3b8', marginBottom: '4px' }}
           formatter={(value, name) => [value.toFixed(4), name]}
           labelFormatter={label => `Epoch ${label}`}
           isAnimationActive={false}
@@ -83,7 +83,7 @@ export function LrChart({ lrCurve, epoch, currentLr, maxEpochs }) {
   const path = lrCurve.map((v, i) => `${i === 0 ? 'M' : 'L'} ${mapX(i)} ${mapY(v)}`).join(' ');
 
   return (
-    <div className='w-full h-12 bg-white rounded border border-violet-100 p-1 relative flex items-center'>
+    <div className='w-full h-12 bg-slate-800 rounded border border-violet-700 p-1 relative flex items-center'>
       <div className='absolute left-2 text-[8px] text-violet-400 font-mono'>
         LR: {currentLr.toFixed(4)}
       </div>
@@ -95,9 +95,9 @@ export function LrChart({ lrCurve, epoch, currentLr, maxEpochs }) {
           strokeWidth='2'
           strokeLinecap='round'
           strokeLinejoin='round'
-          opacity='0.5'
+          opacity='0.7'
         />
-        <circle cx={mapX(epoch)} cy={mapY(currentLr)} r='3' fill='#5b21b6' />
+        <circle cx={mapX(epoch)} cy={mapY(currentLr)} r='3' fill='#a78bfa' />
       </svg>
     </div>
   );

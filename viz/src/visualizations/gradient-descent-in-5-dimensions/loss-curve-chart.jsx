@@ -24,11 +24,11 @@ export default function LossCurveChart({ history, epoch, z }) {
       : '';
 
   return (
-    <div className='order-1 lg:order-none bg-white p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-200'>
-      <h2 className='text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1'>
+    <div className='order-1 lg:order-none bg-slate-800 p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-700'>
+      <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1'>
         Training Progress (Loss Curve)
       </h2>
-      <div className='w-full flex justify-center bg-slate-50 rounded-lg border border-slate-100 overflow-hidden'>
+      <div className='w-full flex justify-center bg-slate-900 rounded-lg border border-slate-700 overflow-hidden'>
         <svg viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} className='bg-transparent w-full h-auto'>
           {/* Axes */}
           <line
@@ -36,7 +36,7 @@ export default function LossCurveChart({ history, epoch, z }) {
             y1={mapZToY(0)}
             x2={SVG_WIDTH - MARGIN.right}
             y2={mapZToY(0)}
-            stroke='#e2e8f0'
+            stroke='#334155'
             strokeWidth='2'
           />
           <line
@@ -44,7 +44,7 @@ export default function LossCurveChart({ history, epoch, z }) {
             y1={MARGIN.top}
             x2={MARGIN.left}
             y2={SVG_HEIGHT - MARGIN.bottom}
-            stroke='#e2e8f0'
+            stroke='#334155'
             strokeWidth='2'
           />
 
@@ -53,7 +53,7 @@ export default function LossCurveChart({ history, epoch, z }) {
             x={SVG_WIDTH / 2}
             y={SVG_HEIGHT - 5}
             fontSize='13'
-            fill='#94a3b8'
+            fill='#64748b'
             fontWeight='bold'
             textAnchor='middle'
           >
@@ -63,7 +63,7 @@ export default function LossCurveChart({ history, epoch, z }) {
             x={MARGIN.left - 35}
             y={SVG_HEIGHT / 2}
             fontSize='13'
-            fill='#94a3b8'
+            fill='#64748b'
             fontWeight='bold'
             transform={`rotate(-90, ${MARGIN.left - 35}, ${SVG_HEIGHT / 2})`}
             textAnchor='middle'
@@ -76,7 +76,7 @@ export default function LossCurveChart({ history, epoch, z }) {
             x={MARGIN.left}
             y={SVG_HEIGHT - MARGIN.bottom + 15}
             fontSize='11'
-            fill='#94a3b8'
+            fill='#64748b'
             textAnchor='middle'
           >
             0
@@ -85,7 +85,7 @@ export default function LossCurveChart({ history, epoch, z }) {
             x={SVG_WIDTH - MARGIN.right}
             y={SVG_HEIGHT - MARGIN.bottom + 15}
             fontSize='11'
-            fill='#94a3b8'
+            fill='#64748b'
             textAnchor='middle'
           >
             {maxEpoch}
@@ -94,7 +94,7 @@ export default function LossCurveChart({ history, epoch, z }) {
             x={MARGIN.left - 5}
             y={MARGIN.top + 5}
             fontSize='11'
-            fill='#94a3b8'
+            fill='#64748b'
             textAnchor='end'
           >
             {maxZ.toFixed(0)}
@@ -116,7 +116,7 @@ export default function LossCurveChart({ history, epoch, z }) {
             cy={mapZToY(z)}
             r='5'
             fill='#ef4444'
-            stroke='#ffffff'
+            stroke='#1e293b'
             strokeWidth='2'
           />
         </svg>
@@ -124,11 +124,11 @@ export default function LossCurveChart({ history, epoch, z }) {
 
       <div className='mt-2 flex justify-between px-1'>
         <div className='text-[11px] md:text-xs'>
-          <span className='text-slate-500 font-semibold'>Epoch: </span>
-          <span className='font-mono font-bold text-violet-600'>{epoch}</span>
+          <span className='text-slate-400 font-semibold'>Epoch: </span>
+          <span className='font-mono font-bold text-violet-400'>{epoch}</span>
         </div>
         <div className='text-[11px] md:text-xs'>
-          <span className='text-slate-500 font-semibold'>Output Z: </span>
+          <span className='text-slate-400 font-semibold'>Output Z: </span>
           <span className='font-mono font-bold text-rose-500'>{z.toFixed(4)}</span>
         </div>
       </div>

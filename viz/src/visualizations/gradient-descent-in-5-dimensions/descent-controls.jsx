@@ -12,14 +12,14 @@ export default function DescentControls({
   handleStep,
 }) {
   return (
-    <div className='order-4 lg:order-none p-2 md:p-3 bg-violet-50 border border-violet-100 rounded-lg md:rounded-xl shadow-sm flex flex-col gap-2'>
+    <div className='order-4 lg:order-none p-2 md:p-3 bg-violet-900/20 border border-violet-700 rounded-lg md:rounded-xl shadow-sm flex flex-col gap-2'>
       <div className='flex flex-col sm:flex-row gap-2 items-end'>
         <div className='flex-1 w-full'>
-          <label className='block text-[10px] md:text-xs font-semibold text-slate-600 tracking-wide mb-1'>
+          <label className='block text-[10px] md:text-xs font-semibold text-slate-300 tracking-wide mb-1'>
             <span className='uppercase'>Learning Rate</span> <span className='normal-case inline-block'><TeX math='\eta' /></span>
           </label>
           <select
-            className='w-full bg-white border border-violet-200 text-violet-900 text-xs md:text-sm rounded-lg p-1.5 md:p-2 shadow-sm font-mono focus:ring-violet-500 focus:border-violet-500'
+            className='w-full bg-slate-700 border border-violet-600 text-violet-200 text-xs md:text-sm rounded-lg p-1.5 md:p-2 shadow-sm font-mono focus:ring-violet-500 focus:border-violet-500'
             value={learningRate}
             onChange={e => setLearningRate(Number(e.target.value))}
           >
@@ -42,7 +42,7 @@ export default function DescentControls({
             disabled={playMode !== 0}
             className={`flex-1 sm:flex-none text-white font-bold py-1.5 px-3 md:py-2 md:px-4 text-xs md:text-sm rounded-lg transition-colors shadow-sm flex items-center justify-center gap-1 ${
               playMode !== 0
-                ? 'bg-violet-300 cursor-not-allowed'
+                ? 'bg-violet-800 cursor-not-allowed'
                 : 'bg-violet-600 hover:bg-violet-700 active:bg-violet-800'
             }`}
           >

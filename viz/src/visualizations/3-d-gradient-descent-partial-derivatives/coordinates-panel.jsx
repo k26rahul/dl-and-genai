@@ -44,7 +44,7 @@ function PartialArrow({ slope, color, arrowWidth, labelFlat }) {
           )}
         </svg>
       ) : (
-        <span className='text-[10px] md:text-xs font-bold text-slate-400'>● {labelFlat}</span>
+        <span className='text-[10px] md:text-xs font-bold text-slate-500'>● {labelFlat}</span>
       )}
     </div>
   );
@@ -52,33 +52,33 @@ function PartialArrow({ slope, color, arrowWidth, labelFlat }) {
 
 export default function CoordinatesPanel({ x, y, z, mX, mY, colorX, colorY, arrowWidthX, arrowWidthY }) {
   return (
-    <div className='order-2 lg:order-none bg-white p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-200 flex flex-col items-center'>
-      <h2 className='text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest w-full border-b border-slate-100 pb-1.5 mb-2 md:mb-3'>
+    <div className='order-2 lg:order-none bg-slate-800 p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-700 flex flex-col items-center'>
+      <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest w-full border-b border-slate-600 pb-1.5 mb-2 md:mb-3'>
         Current Coordinates
       </h2>
 
       <div className='grid grid-cols-3 gap-1.5 md:gap-2 w-full mb-2 md:mb-3'>
-        <div className='bg-rose-50 p-1.5 md:p-2 rounded-lg text-center border border-rose-100'>
+        <div className='bg-rose-900/20 p-1.5 md:p-2 rounded-lg text-center border border-rose-800'>
           <div className='text-[9px] md:text-[10px] font-bold text-rose-500 uppercase tracking-wide'>
             X (Input)
           </div>
-          <div className='text-sm md:text-lg font-mono font-semibold text-rose-900'>
+          <div className='text-sm md:text-lg font-mono font-semibold text-rose-300'>
             {x.toFixed(2)}
           </div>
         </div>
-        <div className='bg-sky-50 p-1.5 md:p-2 rounded-lg text-center border border-sky-100'>
-          <div className='text-[9px] md:text-[10px] font-bold text-sky-600 uppercase tracking-wide'>
+        <div className='bg-sky-900/20 p-1.5 md:p-2 rounded-lg text-center border border-sky-800'>
+          <div className='text-[9px] md:text-[10px] font-bold text-sky-500 uppercase tracking-wide'>
             Y (Input)
           </div>
-          <div className='text-sm md:text-lg font-mono font-semibold text-sky-900'>
+          <div className='text-sm md:text-lg font-mono font-semibold text-sky-300'>
             {y.toFixed(2)}
           </div>
         </div>
-        <div className='bg-slate-100 p-1.5 md:p-2 rounded-lg text-center border border-slate-200'>
-          <div className='text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wide'>
+        <div className='bg-slate-700 p-1.5 md:p-2 rounded-lg text-center border border-slate-600'>
+          <div className='text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-wide'>
             Z (Output)
           </div>
-          <div className='text-sm md:text-lg font-mono font-semibold text-slate-700'>
+          <div className='text-sm md:text-lg font-mono font-semibold text-slate-200'>
             {z.toFixed(2)}
           </div>
         </div>
@@ -86,9 +86,9 @@ export default function CoordinatesPanel({ x, y, z, mX, mY, colorX, colorY, arro
 
       <div className='w-full space-y-1.5 md:space-y-2'>
         {/* ∂Z/∂X */}
-        <div className='flex flex-col items-center bg-slate-50 p-2 md:p-3 rounded-lg border border-slate-100'>
+        <div className='flex flex-col items-center bg-slate-700 p-2 md:p-3 rounded-lg border border-slate-600'>
           <div className='flex justify-between w-full items-center mb-1'>
-            <span className='text-[10px] md:text-xs font-bold text-slate-500'>
+            <span className='text-[10px] md:text-xs font-bold text-slate-400'>
               Partial <TeX math='\partial Z / \partial X' />
             </span>
             <span className='font-mono font-bold text-sm md:text-lg' style={{ color: colorX }}>
@@ -100,9 +100,9 @@ export default function CoordinatesPanel({ x, y, z, mX, mY, colorX, colorY, arro
         </div>
 
         {/* ∂Z/∂Y */}
-        <div className='flex flex-col items-center bg-slate-50 p-2 md:p-3 rounded-lg border border-slate-100'>
+        <div className='flex flex-col items-center bg-slate-700 p-2 md:p-3 rounded-lg border border-slate-600'>
           <div className='flex justify-between w-full items-center mb-1'>
-            <span className='text-[10px] md:text-xs font-bold text-slate-500'>
+            <span className='text-[10px] md:text-xs font-bold text-slate-400'>
               Partial <TeX math='\partial Z / \partial Y' />
             </span>
             <span className='font-mono font-bold text-sm md:text-lg' style={{ color: colorY }}>

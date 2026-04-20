@@ -35,9 +35,9 @@ export default function DataPreviewPanel({
   ) => {
     if (!dataX || !dataY || indices.length === 0) return null;
     return (
-      <div className='bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col overflow-hidden mb-2'>
+      <div className='bg-slate-800 rounded-lg shadow-sm border border-slate-700 flex flex-col overflow-hidden mb-2'>
         <div
-          className='bg-slate-800 p-2 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition-colors'
+          className='bg-slate-800 p-2 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition-colors border-b border-slate-700'
           onClick={toggleOpen}
         >
           <h2 className='text-xs font-bold text-white flex items-center gap-2'>
@@ -56,10 +56,10 @@ export default function DataPreviewPanel({
         </div>
 
         {isOpen && (
-          <div className='overflow-x-auto border-t border-slate-200'>
+          <div className='overflow-x-auto border-t border-slate-700'>
             <table className='w-full text-left border-collapse'>
               <thead>
-                <tr className='bg-slate-100 text-[9px] md:text-[10px] text-slate-500 uppercase tracking-wider border-b border-slate-200'>
+                <tr className='bg-slate-700 text-[9px] md:text-[10px] text-slate-400 uppercase tracking-wider border-b border-slate-600'>
                   <th className='px-2 py-1 font-semibold w-12'>Index</th>
                   <th className='px-2 py-1 font-semibold'>Features (X)</th>
                   <th className='px-2 py-1 font-semibold text-center'>Pred</th>
@@ -105,25 +105,25 @@ export default function DataPreviewPanel({
                   const rowColor =
                     predArray
                       ? isCorrect && dsConfig.type === 'classification'
-                        ? 'bg-emerald-50/50'
+                        ? 'bg-emerald-900/20'
                         : dsConfig.type === 'classification'
-                          ? 'bg-red-50/50'
-                          : 'bg-blue-50/50'
+                          ? 'bg-red-900/20'
+                          : 'bg-blue-900/20'
                       : '';
 
                   return (
                     <tr
                       key={`${type}-${idx}-${i}`}
-                      className={`border-b border-slate-100 font-mono text-[9px] md:text-[11px] ${rowColor}`}
+                      className={`border-b border-slate-700 font-mono text-[9px] md:text-[11px] ${rowColor}`}
                     >
-                      <td className='px-2 py-1 text-slate-400'>#{idx}</td>
-                      <td className='px-2 py-1 text-slate-600 truncate max-w-[150px]'>
+                      <td className='px-2 py-1 text-slate-500'>#{idx}</td>
+                      <td className='px-2 py-1 text-slate-300 truncate max-w-[150px]'>
                         [{x.slice(0, 4).map(v => v.toFixed(1)).join(', ')}{x.length > 4 ? '...' : ''}]
                       </td>
-                      <td className='px-2 py-1 text-center font-bold text-violet-600'>
+                      <td className='px-2 py-1 text-center font-bold text-violet-400'>
                         {predDisplay}
                       </td>
-                      <td className='px-2 py-1 text-center font-bold text-slate-800'>
+                      <td className='px-2 py-1 text-center font-bold text-slate-200'>
                         {trueDisplay}
                       </td>
                       <td className='px-2 py-1 text-right text-red-500'>{errDisplay}</td>
@@ -139,9 +139,9 @@ export default function DataPreviewPanel({
   };
 
   return (
-    <div className='bg-white rounded-lg md:rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden h-fit'>
+    <div className='bg-slate-800 rounded-lg md:rounded-xl shadow-sm border border-slate-700 flex flex-col overflow-hidden h-fit'>
       <div
-        className='bg-slate-800 p-2.5 md:p-4 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition-colors'
+        className='bg-slate-800 p-2.5 md:p-4 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition-colors border-b border-slate-700'
         onClick={() => setIsTableOpen(!isTableOpen)}
       >
         <h2 className='text-sm md:text-base font-bold text-white flex items-center gap-2'>

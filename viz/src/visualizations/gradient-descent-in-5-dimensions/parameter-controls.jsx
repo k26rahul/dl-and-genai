@@ -4,9 +4,9 @@ import TeX from '@matejmazur/react-katex';
 
 export default function ParameterControls({ params, grads, currentFunc, handleManualChange, getDerivativeColor }) {
   return (
-    <div className='order-2 lg:order-none bg-white p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-200'>
-      <div className='border-b border-slate-100 pb-1.5 mb-2'>
-        <h2 className='text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest'>
+    <div className='order-2 lg:order-none bg-slate-800 p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-700'>
+      <div className='border-b border-slate-600 pb-1.5 mb-2'>
+        <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest'>
           Parameter Space (
           <TeX math='x_1' /> – <TeX math='x_5' />)
         </h2>
@@ -21,10 +21,10 @@ export default function ParameterControls({ params, grads, currentFunc, handleMa
           return (
             <div
               key={i}
-              className='flex flex-col gap-0.5 md:gap-1 bg-slate-50 p-1.5 md:p-2 rounded-lg border border-slate-100'
+              className='flex flex-col gap-0.5 md:gap-1 bg-slate-700 p-1.5 md:p-2 rounded-lg border border-slate-600'
             >
               <div className='flex justify-between items-center'>
-                <span className='font-bold text-slate-700 w-6 md:w-8 text-xs md:text-sm'>
+                <span className='font-bold text-slate-200 w-6 md:w-8 text-xs md:text-sm'>
                   <TeX math={`x_{${i + 1}}`} />
                 </span>
                 <input
@@ -34,15 +34,15 @@ export default function ParameterControls({ params, grads, currentFunc, handleMa
                   step='0.01'
                   value={val}
                   onChange={e => handleManualChange(i, parseFloat(e.target.value))}
-                  className='flex-1 mx-2 md:mx-3 h-1 md:h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600'
+                  className='flex-1 mx-2 md:mx-3 h-1 md:h-1.5 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-violet-500'
                 />
-                <span className='font-mono text-[11px] md:text-sm font-semibold w-8 md:w-12 text-right text-violet-900'>
+                <span className='font-mono text-[11px] md:text-sm font-semibold w-8 md:w-12 text-right text-violet-300'>
                   {val.toFixed(2)}
                 </span>
               </div>
 
               <div className='flex justify-between items-center px-1 md:px-2 text-[9px] md:text-xs'>
-                <span className='text-slate-500 font-semibold flex items-center gap-0.5'>
+                <span className='text-slate-400 font-semibold flex items-center gap-0.5'>
                   <TeX math={`\\partial Z / \\partial x_{${i + 1}}`} /> ={' '}
                   <span
                     style={{ color }}
@@ -93,7 +93,7 @@ export default function ParameterControls({ params, grads, currentFunc, handleMa
                       )}
                     </svg>
                   ) : (
-                    <span className='text-slate-400 font-bold'>● Flat</span>
+                    <span className='text-slate-500 font-bold'>● Flat</span>
                   )}
                 </div>
               </div>

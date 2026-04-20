@@ -127,12 +127,12 @@ export default function Visualization() {
   return (
     <div className='flex flex-col gap-2 md:gap-3 lg:gap-4'>
       {/* TOP CONTROLS */}
-      <div className='bg-white p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-2 items-center justify-between'>
+      <div className='bg-slate-800 p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-700 flex flex-wrap gap-2 items-center justify-between'>
         {/* Play / Reset */}
         <div className='flex gap-1.5 md:gap-2 items-center w-full sm:w-auto'>
           <button
             onClick={handleReset}
-            className='flex-1 sm:flex-none px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-xs md:text-sm font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors'
+            className='flex-1 sm:flex-none px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-xs md:text-sm font-bold bg-slate-600 text-slate-200 hover:bg-slate-500 transition-colors'
           >
             Reset
           </button>
@@ -140,7 +140,7 @@ export default function Visualization() {
             onClick={handleStep}
             disabled={playMode !== 0}
             className={`flex-1 sm:flex-none px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-xs md:text-sm font-bold transition-colors text-white shadow-sm ${
-              playMode !== 0 ? 'bg-violet-300 cursor-not-allowed' : 'bg-violet-600 hover:bg-violet-700'
+              playMode !== 0 ? 'bg-violet-800 cursor-not-allowed' : 'bg-violet-600 hover:bg-violet-700'
             }`}
           >
             Step
@@ -161,13 +161,13 @@ export default function Visualization() {
 
         {/* LR */}
         <div className='flex gap-1.5 md:gap-2 items-center w-full sm:w-auto justify-between sm:justify-start'>
-          <label className='text-xs md:text-sm font-semibold text-slate-600'>
+          <label className='text-xs md:text-sm font-semibold text-slate-300'>
             Learning Rate:
           </label>
           <select
             value={learningRate}
             onChange={e => setLearningRate(Number(e.target.value))}
-            className='bg-slate-100 border border-slate-300 rounded px-1.5 py-1 md:px-2 md:py-1.5 text-xs md:text-sm font-mono shadow-inner'
+            className='bg-slate-700 border border-slate-600 text-slate-200 rounded px-1.5 py-1 md:px-2 md:py-1.5 text-xs md:text-sm font-mono shadow-inner'
           >
             {LEARNING_RATES.map(lr => (
               <option key={lr} value={lr}>{lr.toFixed(2)}</option>
@@ -176,18 +176,18 @@ export default function Visualization() {
         </div>
 
         {/* Epoch + Loss readout */}
-        <div className='flex items-center justify-center gap-3 md:gap-4 bg-slate-100 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-slate-200 w-full lg:w-auto'>
+        <div className='flex items-center justify-center gap-3 md:gap-4 bg-slate-700 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-slate-600 w-full lg:w-auto'>
           <div className='text-center'>
-            <span className='text-slate-500 font-semibold uppercase tracking-wider text-[9px] md:text-[10px]'>
+            <span className='text-slate-400 font-semibold uppercase tracking-wider text-[9px] md:text-[10px]'>
               Epoch
             </span>
-            <div className='font-mono text-base md:text-lg font-bold text-slate-800 leading-none mt-0.5'>
+            <div className='font-mono text-base md:text-lg font-bold text-slate-200 leading-none mt-0.5'>
               {snap.epoch}
             </div>
           </div>
-          <div className='w-px h-6 md:h-8 bg-slate-300' />
+          <div className='w-px h-6 md:h-8 bg-slate-500' />
           <div className='text-center w-16 md:w-20'>
-            <span className='text-slate-500 font-semibold uppercase tracking-wider text-[9px] md:text-[10px]'>
+            <span className='text-slate-400 font-semibold uppercase tracking-wider text-[9px] md:text-[10px]'>
               Mean Loss
             </span>
             <div className='font-mono text-base md:text-lg font-bold text-red-500 leading-none mt-0.5'>

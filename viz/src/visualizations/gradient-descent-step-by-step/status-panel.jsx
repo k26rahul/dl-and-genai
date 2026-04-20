@@ -12,34 +12,34 @@ export default function StatusPanel({ x, y, m, derivativeColor, arrowWidth }) {
         : 'Slope down • Step Right';
 
   return (
-    <div className='order-2 lg:order-none bg-white p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-200'>
-      <h2 className='text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 md:mb-3'>
+    <div className='order-2 lg:order-none bg-slate-800 p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-700'>
+      <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 md:mb-3'>
         Current Status
       </h2>
 
       {/* X / Y tiles */}
       <div className='grid grid-cols-2 gap-1.5 md:gap-2 mb-2 md:mb-3'>
-        <div className='bg-violet-50 border border-violet-100 rounded-lg p-1.5 md:p-2 text-center'>
-          <div className='text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-0.5'>
+        <div className='bg-violet-900/30 border border-violet-700 rounded-lg p-1.5 md:p-2 text-center'>
+          <div className='text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-0.5'>
             Current X
           </div>
-          <div className='font-mono text-sm md:text-lg font-bold text-violet-900'>
+          <div className='font-mono text-sm md:text-lg font-bold text-violet-300'>
             {x.toFixed(4)}
           </div>
         </div>
-        <div className='bg-slate-100 border border-slate-200 rounded-lg p-1.5 md:p-2 text-center'>
-          <div className='text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-0.5'>
+        <div className='bg-slate-700 border border-slate-600 rounded-lg p-1.5 md:p-2 text-center'>
+          <div className='text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-0.5'>
             Output Y
           </div>
-          <div className='font-mono text-sm md:text-lg font-bold text-slate-700'>
+          <div className='font-mono text-sm md:text-lg font-bold text-slate-200'>
             {y.toFixed(4)}
           </div>
         </div>
       </div>
 
       {/* Derivative readout */}
-      <div className='bg-slate-100 border border-slate-200 rounded-lg p-2 md:p-3 mb-2 md:mb-3'>
-        <div className='text-[9px] md:text-[10px] font-bold text-slate-500 tracking-wide mb-1 flex items-center'>
+      <div className='bg-slate-700 border border-slate-600 rounded-lg p-2 md:p-3 mb-2 md:mb-3'>
+        <div className='text-[9px] md:text-[10px] font-bold text-slate-400 tracking-wide mb-1 flex items-center'>
           <span className='uppercase'>Derivative</span> <span className='normal-case inline-block ml-1.5 text-xs md:text-sm'><TeX math='\dfrac{dy}{dx}' /></span>
         </div>
         <div
@@ -48,7 +48,7 @@ export default function StatusPanel({ x, y, m, derivativeColor, arrowWidth }) {
         >
           {m.toFixed(4)}
         </div>
-        <div className='text-[9px] md:text-xs text-center text-slate-500 mt-0.5 flex items-center justify-center gap-1'>
+        <div className='text-[9px] md:text-xs text-center text-slate-400 mt-0.5 flex items-center justify-center gap-1'>
           {m > 0 ? (
             <>
               ↑ <TeX math='y' /> Increasing
@@ -64,8 +64,8 @@ export default function StatusPanel({ x, y, m, derivativeColor, arrowWidth }) {
       </div>
 
       {/* Gradient arrow */}
-      <div className='bg-slate-100 border border-slate-200 rounded-lg p-2 md:p-3'>
-        <div className='text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5 md:mb-2'>
+      <div className='bg-slate-700 border border-slate-600 rounded-lg p-2 md:p-3'>
+        <div className='text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 md:mb-2'>
           Steepest Ascent Direction
         </div>
         <div className='flex justify-center items-center'>
@@ -98,10 +98,7 @@ export default function StatusPanel({ x, y, m, derivativeColor, arrowWidth }) {
             />
           </svg>
         </div>
-        <div
-          className='text-[10px] md:text-xs font-semibold text-center mt-1.5 md:mt-2'
-          style={{ color: derivativeColor }}
-        >
+        <div className='text-[10px] md:text-xs font-semibold text-center mt-1.5 md:mt-2 text-slate-400'>
           {arrowLabel}
         </div>
       </div>

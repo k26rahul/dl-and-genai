@@ -10,9 +10,9 @@ export default function NetworkGraph({ snap, phase }) {
   const svgKey = isFast ? 'fast' : `${phase}-${snap.epoch}`;
 
   return (
-    <div className='bg-white p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-200 flex flex-col items-center relative overflow-hidden'>
-      <div className='flex justify-between items-center w-full mb-1 border-b border-slate-100 pb-1.5'>
-        <h2 className='text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest'>
+    <div className='bg-slate-800 p-2 md:p-3 rounded-lg md:rounded-xl shadow-sm border border-slate-700 flex flex-col items-center relative overflow-hidden'>
+      <div className='flex justify-between items-center w-full mb-1 border-b border-slate-600 pb-1.5'>
+        <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest'>
           Architecture &amp; Flow
         </h2>
 
@@ -29,7 +29,7 @@ export default function NetworkGraph({ snap, phase }) {
               className={`text-[7px] md:text-[9px] font-bold px-1.5 py-0.5 rounded transition-all ${
                 phase === p.id
                   ? `bg-${p.color}-100 text-${p.color}-700 ring-1 ring-${p.color}-400 scale-105`
-                  : 'text-slate-300 bg-slate-50'
+                  : 'text-slate-600 bg-slate-700'
               }`}
             >
               {p.label}
@@ -121,16 +121,16 @@ export default function NetworkGraph({ snap, phase }) {
         {/* Input nodes */}
         {IN_NODES.map(n => (
           <g key={n.id}>
-            <circle cx={n.x} cy={n.y} r='16' fill='#f8fafc' stroke='#94a3b8' strokeWidth='2' />
-            <text x={n.x} y={n.y + 4} fontSize='12' fill='#475569' textAnchor='middle' fontWeight='bold'>{n.label}</text>
+            <circle cx={n.x} cy={n.y} r='16' fill='#1e293b' stroke='#64748b' strokeWidth='2' />
+            <text x={n.x} y={n.y + 4} fontSize='12' fill='#94a3b8' textAnchor='middle' fontWeight='bold'>{n.label}</text>
           </g>
         ))}
 
         {/* Hidden nodes */}
         {HID_NODES.map(n => (
           <g key={n.id}>
-            <circle cx={n.x} cy={n.y} r='16' fill='#f0fdf4' stroke='#22c55e' strokeWidth='2' />
-            <text x={n.x} y={n.y + 4} fontSize='11' fill='#166534' textAnchor='middle' fontWeight='bold'>ReLU</text>
+            <circle cx={n.x} cy={n.y} r='16' fill='#052e16' stroke='#22c55e' strokeWidth='2' />
+            <text x={n.x} y={n.y + 4} fontSize='11' fill='#4ade80' textAnchor='middle' fontWeight='bold'>ReLU</text>
             <rect x={n.x - 6} y={n.y - 24} width='12' height='6' fill='#fbbf24' stroke='#d97706' strokeWidth='1' />
           </g>
         ))}
@@ -138,15 +138,15 @@ export default function NetworkGraph({ snap, phase }) {
         {/* Output node */}
         {OUT_NODES.map(n => (
           <g key={n.id}>
-            <circle cx={n.x} cy={n.y} r='18' fill='#eff6ff' stroke='#3b82f6' strokeWidth='2' />
-            <text x={n.x} y={n.y + 4} fontSize='10' fill='#1e3a8a' textAnchor='middle' fontWeight='bold'>Sigmoid</text>
+            <circle cx={n.x} cy={n.y} r='18' fill='#0c1a3a' stroke='#3b82f6' strokeWidth='2' />
+            <text x={n.x} y={n.y + 4} fontSize='10' fill='#93c5fd' textAnchor='middle' fontWeight='bold'>Sigmoid</text>
             <rect x={n.x - 6} y={n.y - 26} width='12' height='6' fill='#fbbf24' stroke='#d97706' strokeWidth='1' />
           </g>
         ))}
       </svg>
 
       {/* Legend */}
-      <div className='mt-1.5 flex flex-wrap justify-center gap-2 md:gap-4 text-[9px] md:text-[11px] text-slate-500 border-t border-slate-100 pt-1.5 w-full'>
+      <div className='mt-1.5 flex flex-wrap justify-center gap-2 md:gap-4 text-[9px] md:text-[11px] text-slate-400 border-t border-slate-600 pt-1.5 w-full'>
         <div className='flex items-center gap-1'>
           <div className='w-3 h-1 md:w-4 md:h-1.5 bg-blue-500 rounded-full opacity-60' />
           <span className='font-medium'>Pos Weight</span>

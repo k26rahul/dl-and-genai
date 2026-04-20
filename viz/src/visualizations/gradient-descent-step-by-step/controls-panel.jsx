@@ -15,21 +15,21 @@ export default function ControlsPanel({
   derivativeColor,
 }) {
   return (
-    <div className='order-4 lg:order-none bg-violet-50 border border-violet-100 rounded-lg md:rounded-xl p-2 md:p-3 shadow-sm'>
-      <h2 className='text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 md:mb-3'>
+    <div className='order-4 lg:order-none bg-violet-900/20 border border-violet-700 rounded-lg md:rounded-xl p-2 md:p-3 shadow-sm'>
+      <h2 className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 md:mb-3'>
         Gradient Descent Controls
       </h2>
 
       {/* LR + Step button row */}
       <div className='flex items-center gap-2 md:gap-3 mb-2 md:mb-3'>
         <div className='flex-1'>
-          <label className='block text-[10px] md:text-xs font-semibold text-slate-600 tracking-wide mb-1'>
+          <label className='block text-[10px] md:text-xs font-semibold text-slate-300 tracking-wide mb-1'>
             <span className='uppercase'>Learning Rate</span> <span className='normal-case inline-block'><TeX math='\eta' /></span>
           </label>
           <select
             value={learningRate}
             onChange={e => setLearningRate(parseFloat(e.target.value))}
-            className='w-full bg-white border border-violet-200 text-violet-900 text-xs md:text-sm rounded-lg p-1.5 md:p-2 font-mono shadow-sm focus:ring-violet-500 focus:border-violet-500'
+            className='w-full bg-slate-700 border border-violet-600 text-violet-200 text-xs md:text-sm rounded-lg p-1.5 md:p-2 font-mono shadow-sm focus:ring-violet-500 focus:border-violet-500'
           >
             {learningRates.map(lr => (
               <option key={lr} value={lr}>
@@ -49,27 +49,27 @@ export default function ControlsPanel({
       </div>
 
       {/* Step Computation Display */}
-      <div className='bg-white border border-violet-200 shadow-inner rounded-lg p-2 md:p-3'>
-        <div className='text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5 md:mb-2'>
+      <div className='bg-slate-800 border border-slate-600 shadow-inner rounded-lg p-2 md:p-3'>
+        <div className='text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 md:mb-2'>
           Step Computation
         </div>
 
-        <div className='font-mono text-[11px] md:text-[14px] text-slate-700 flex flex-col gap-1 md:gap-1.5'>
+        <div className='font-mono text-[11px] md:text-[14px] text-slate-300 flex flex-col gap-1 md:gap-1.5'>
           {/* Symbolic formula row using KaTeX */}
           <div className='flex items-center gap-1'>
             <TeX math="x_{new} = x_{curr} - (\eta \cdot f'(x))" />
           </div>
 
-          <div className='w-full h-px bg-slate-200 my-0.5' />
+          <div className='w-full h-px bg-slate-600 my-0.5' />
 
           {/* Value row */}
           <div className='flex flex-wrap items-center gap-x-1 md:gap-x-1.5'>
-            <span className='flex items-center mt-1 mr-1 text-slate-600'>
+            <span className='flex items-center mt-1 mr-1 text-slate-400'>
               <TeX math='x_{new} =' />
             </span>
-            <span className='font-semibold text-violet-700'>{x.toFixed(4)}</span>
+            <span className='font-semibold text-violet-400'>{x.toFixed(4)}</span>
             <span>- (</span>
-            <span className='font-semibold text-violet-500'>{learningRate}</span>
+            <span className='font-semibold text-violet-400'>{learningRate}</span>
             <span>×</span>
             <span className='font-semibold' style={{ color: derivativeColor }}>
               {m < 0 ? `(${m.toFixed(4)})` : m.toFixed(4)}
@@ -79,12 +79,12 @@ export default function ControlsPanel({
 
           {/* Result row */}
           <div className='flex flex-wrap items-center gap-x-1 md:gap-x-1.5 text-sm md:text-base mt-0.5 md:mt-1'>
-            <span className='flex items-center mt-0.5 mr-1 text-slate-600'>
+            <span className='flex items-center mt-0.5 mr-1 text-slate-400'>
               <TeX math='x_{new} =' />
             </span>
             <span className='font-bold text-rose-500'>{nextX.toFixed(4)}</span>
             {Math.abs(nextX - rawNextX) > 0.0001 && (
-              <span className='text-[9px] md:text-[10px] text-slate-400 font-sans ml-1'>
+              <span className='text-[9px] md:text-[10px] text-slate-500 font-sans ml-1'>
                 (Clamped)
               </span>
             )}
